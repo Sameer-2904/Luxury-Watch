@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AURELIS — Time, Refined.</title>
+<meta name="description" content="A cinematic digital experience for AURELIS Horology, an independent luxury watchmaker creating mechanically sophisticated timepieces.">
+<meta property="og:title" content="AURELIS — Time, Refined.">
+<meta property="og:description" content="A cinematic digital experience for AURELIS Horology, an independent luxury watchmaker creating mechanically sophisticated timepieces.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AURELIS — Time, Refined.">
+<meta name="twitter:description" content="An independent watchmaker. Mechanically sophisticated timepieces.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='none' stroke='%23C9A876' stroke-width='4'/%3E%3Ccircle cx='50' cy='50' r='4' fill='%23C9A876'/%3E%3Cline x1='50' y1='50' x2='50' y2='20' stroke='%23C9A876' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='50' y1='50' x2='68' y2='58' stroke='%23C9A876' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   AURELIS HOROLOGY — DESIGN TOKENS
+============================================================ */
+:root{
+  --serif: 'Fraunces', serif;
+  --sans: 'Space Grotesk', sans-serif;
+
+  /* darkroom (default) */
+  --bg: #0A0A0B;
+  --bg-1: #141517;
+  --bg-2: #1B1C1F;
+  --bg-3: #232427;
+  --surface-glass: rgba(20,21,23,0.55);
+  --line: rgba(237,234,227,0.10);
+  --line-strong: rgba(237,234,227,0.18);
+  --text: #EDEAE3;
+  --text-dim: #9A9994;
+  --text-faint: #5E5D5A;
+  --gold: #C9A876;
+  --gold-light: #E4D4AF;
+  --gold-dim: #8A7754;
+  --shadow: rgba(0,0,0,0.6);
+  --atmosphere: radial-gradient(120% 90% at 50% -10%, #1c1a16 0%, #0A0A0B 55%);
+}
+html[data-theme="light"]{
+  --bg: #EDE7DB;
+  --bg-1: #E3DCCC;
+  --bg-2: #DAD1BC;
+  --bg-3: #CFC5AC;
+  --surface-glass: rgba(237,231,219,0.6);
+  --line: rgba(30,26,20,0.12);
+  --line-strong: rgba(30,26,20,0.22);
+  --text: #1C1913;
+  --text-dim: #6B6357;
+  --text-faint: #9C9384;
+  --gold: #8A5A34;
+  --gold-light: #A8703F;
+  --gold-dim: #6B4526;
+  --shadow: rgba(30,26,18,0.18);
+  --atmosphere: radial-gradient(120% 90% at 50% -10%, #f4efe2 0%, #EDE7DB 55%);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:auto;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  transition:background .8s ease, color .8s ease;
+  cursor:default;
+  position:relative;
+}
+
+/* film grain — sits above everything, extremely subtle, gives the darkroom its texture */
+#grain{
+  position:fixed; inset:0; z-index:9000; pointer-events:none; opacity:0.045; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:180px;
+}
+html[data-theme="light"] #grain{ opacity:0.03; }
+
+/* soft vignette used inside the hero to frame the watch like a studio backdrop */
+.vignette{ position:absolute; inset:0; pointer-events:none; z-index:3;
+  background:radial-gradient(120% 85% at 50% 45%, transparent 40%, rgba(0,0,0,0.55) 100%);
+}
+html[data-theme="light"] .vignette{ background:radial-gradient(120% 85% at 50% 45%, transparent 40%, rgba(40,32,18,0.18) 100%); }
+
+/* cursor-follow spotlight in the hero — a controlled beam of light, not a glow blob */
+#spotlight{
+  position:absolute; inset:0; z-index:2; pointer-events:none; opacity:0;
+  background:radial-gradient(420px circle at var(--sx,50%) var(--sy,40%), rgba(201,168,118,0.10), transparent 62%);
+  transition:opacity .6s ease;
+}
+body.has-cursor, body.has-cursor a, body.has-cursor button{cursor:none;}
+::selection{background:var(--gold); color:#0A0A0B;}
+img,canvas,svg{display:block; max-width:100%;}
+a{color:inherit; text-decoration:none;}
+button{font-family:inherit; background:none; border:none; color:inherit;}
+h1,h2,h3,h4{font-family:var(--serif); font-weight:400; line-height:1.02; letter-spacing:-0.01em;}
+.eyebrow{font-family:var(--sans); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--text-dim);}
+.serif-accent{font-style:italic;}
+p{line-height:1.65; color:var(--text-dim);}
+.container{max-width:1360px; margin:0 auto; padding:0 6vw;}
+section{position:relative;}
+.visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);}
+
+/* focus states */
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+  outline:2px solid var(--gold); outline-offset:4px; border-radius:2px;
+}
+
+/* fluid type scale */
+.type-hero{ font-size:clamp(3.4rem, 9.6vw, 9.5rem); letter-spacing:-0.02em; text-shadow:0 8px 40px rgba(0,0,0,0.5); }
+.type-xl{ font-size:clamp(2.4rem, 6vw, 5.6rem); }
+.type-lg{ font-size:clamp(1.9rem, 3.6vw, 3.4rem); }
+.type-md{ font-size:clamp(1.3rem, 2vw, 1.8rem); }
+.type-num{ font-family:var(--serif); font-weight:300; font-size:clamp(3rem,7vw,6.4rem); color:var(--gold-light); line-height:1; }
+.gold-glow{ text-shadow:0 0 40px rgba(201,168,118,0.35), 0 0 90px rgba(201,168,118,0.12); }
+
+/* ============================================================
+   PRELOADER
+============================================================ */
+#preloader{
+  position:fixed; inset:0; z-index:9999; background:#0A0A0B;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px;
+}
+#preloader .mark{ font-family:var(--serif); font-size:clamp(2.2rem,6vw,3.4rem); letter-spacing:0.06em; color:#EDEAE3;}
+#preloader .sub{ font-family:var(--sans); font-size:11px; letter-spacing:0.3em; color:#8A7754; text-transform:uppercase;}
+#preloader .bar-track{ width:220px; height:1px; background:rgba(237,234,227,0.15); position:relative; margin-top:10px;}
+#preloader .bar-fill{ position:absolute; left:0; top:0; height:100%; width:0%; background:#C9A876;}
+#preloader .pct{ font-family:var(--sans); font-size:11px; letter-spacing:0.15em; color:#5E5D5A; margin-top:2px;}
+#preloader.done{ pointer-events:none; }
+
+/* ============================================================
+   CUSTOM CURSOR
+============================================================ */
+#cursor{
+  position:fixed; top:0; left:0; width:10px; height:10px; border-radius:50%;
+  background:var(--gold); pointer-events:none; z-index:9998; mix-blend-mode:difference;
+  transform:translate(-50%,-50%); transition:width .25s ease,height .25s ease, background .25s ease;
+}
+#cursor-label{
+  position:fixed; top:0; left:0; pointer-events:none; z-index:9998; transform:translate(-50%,-50%);
+  font-family:var(--sans); font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:#0A0A0B;
+  background:var(--gold); padding:5px 10px; border-radius:20px; opacity:0; transition:opacity .2s ease;
+  white-space:nowrap;
+}
+
+/* ============================================================
+   NAV
+============================================================ */
+#nav{
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:26px 6vw; transition:padding .5s ease, background .5s ease, border-color .5s ease;
+  border-bottom:1px solid transparent;
+}
+#nav.scrolled{ padding:16px 6vw; background:var(--surface-glass); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); }
+.nav-logo{ font-family:var(--serif); font-size:19px; letter-spacing:0.14em; }
+.nav-center{ display:flex; gap:34px; }
+.nav-link{
+  font-size:11px; letter-spacing:0.16em; color:var(--text-dim); position:relative; padding-bottom:3px; transition:color .3s ease;
+}
+.nav-link::after{ content:''; position:absolute; left:0; bottom:0; width:0%; height:1px; background:var(--gold); transition:width .35s ease; }
+.nav-link.active, .nav-link:hover{ color:var(--text); }
+.nav-link.active::after{ width:100%; }
+.nav-right{ display:flex; align-items:center; gap:22px; font-size:11px; letter-spacing:0.14em; color:var(--text-dim); }
+.nav-right button{ font-size:11px; letter-spacing:0.14em; color:var(--text-dim); display:flex; align-items:center; gap:6px; transition:color .3s ease;}
+.nav-right button:hover, .nav-right button[aria-pressed="true"]{ color:var(--gold-light); }
+.dot{ width:5px; height:5px; border-radius:50%; background:var(--text-faint); }
+.dot.live{ background:var(--gold); }
+#menu-toggle{ display:none; flex-direction:column; gap:5px; width:26px; }
+#menu-toggle span{ height:1px; width:100%; background:var(--text); transition:transform .3s ease, opacity .3s ease; }
+
+#mobile-menu{
+  position:fixed; inset:0; background:#0A0A0B; z-index:600; display:flex; flex-direction:column;
+  justify-content:center; padding:8vw; gap:26px; transform:translateY(-100%); transition:transform .6s cubic-bezier(.65,0,.2,1);
+}
+#mobile-menu.open{ transform:translateY(0); }
+#mobile-menu a{ font-family:var(--serif); font-size:12vw; color:#EDEAE3; opacity:0; transform:translateY(30px); }
+#mobile-menu.open a{ opacity:1; transform:translateY(0); transition:opacity .6s ease, transform .6s ease; }
+#mobile-menu .close-btn{ position:absolute; top:26px; right:6vw; font-size:11px; letter-spacing:0.16em; color:#9A9994; }
+
+/* ============================================================
+   HERO
+============================================================ */
+#hero{ height:100svh; position:relative; overflow:hidden; background:var(--atmosphere); }
+#hero::before{
+  content:''; position:absolute; top:-10%; left:50%; width:60%; height:70%; transform:translateX(-50%);
+  background:radial-gradient(ellipse at top, rgba(201,168,118,0.14), transparent 70%);
+  pointer-events:none; z-index:1;
+}
+#hero-canvas{ position:absolute; inset:0; width:100%; height:100%; }
+.hero-inner{ position:relative; z-index:5; height:100%; display:flex; flex-direction:column; justify-content:space-between; padding:150px 6vw 60px; pointer-events:none;}
+.hero-top{ display:flex; justify-content:space-between; align-items:flex-start; }
+.hero-tag{ font-family:var(--sans); font-size:11px; letter-spacing:0.24em; color:var(--text-dim); }
+.hero-title{ text-align:left; }
+.hero-title small{ display:block; font-family:var(--sans); font-size:11px; letter-spacing:0.24em; color:var(--gold-light); margin-bottom:18px; }
+.hero-title h1{ text-transform:uppercase; }
+.hero-bottom{ display:flex; justify-content:space-between; align-items:flex-end; gap:30px; flex-wrap:wrap; }
+.hero-specs{ font-size:12px; letter-spacing:0.1em; color:var(--text-dim); line-height:1.9; }
+.hero-cta-group{ display:flex; flex-direction:column; align-items:flex-end; gap:20px; pointer-events:auto;}
+.scroll-hint{ font-size:11px; letter-spacing:0.16em; color:var(--text-faint); display:flex; align-items:center; gap:8px; }
+.scroll-hint .arrow{ animation:bob 2.4s ease-in-out infinite; }
+@keyframes bob{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(6px);} }
+
+/* magnetic button */
+.btn{
+  position:relative; display:inline-flex; align-items:center; gap:10px; padding:16px 26px;
+  border:1px solid var(--line-strong); font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--text);
+  overflow:hidden; pointer-events:auto; transition:border-color .4s ease, color .4s ease, box-shadow .4s ease;
+}
+.btn:hover{ box-shadow:0 0 0 1px var(--gold), 0 12px 30px -10px rgba(201,168,118,0.35); }
+.btn::before{ content:''; position:absolute; inset:0; background:var(--gold); transform:translateY(101%); transition:transform .45s cubic-bezier(.65,0,.2,1); z-index:-1; }
+.btn:hover{ color:#0A0A0B; border-color:var(--gold); }
+.btn:hover::before{ transform:translateY(0); }
+.btn .arrow-i{ transition:transform .4s cubic-bezier(.65,0,.2,1); }
+.btn:hover .arrow-i{ transform:translateX(4px); }
+.btn-ghost{ border-color:transparent; padding-left:0; }
+
+/* ============================================================
+   MANIFESTO
+============================================================ */
+.manifesto{ min-height:130vh; display:flex; align-items:center; padding:14vh 0; background:var(--bg); }
+.manifesto-inner{ position:relative; width:100%; }
+.manifesto h2{ text-align:center; text-transform:uppercase; }
+.manifesto-line{ overflow:hidden; }
+.manifesto-line span{ display:block; }
+
+/* ============================================================
+   MACRO INSPECTION
+============================================================ */
+.macro{ min-height:180vh; background:var(--bg-1); position:relative; }
+.macro-sticky{ position:sticky; top:0; height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.macro-title{ position:absolute; top:100px; left:6vw; max-width:340px; }
+.macro-stage{ width:min(58vw,620px); aspect-ratio:1/1; position:relative; }
+.hotspot{
+  position:absolute; display:flex; align-items:center; gap:10px; opacity:0; transform:translateX(-8px);
+}
+.hotspot .hdot{ width:8px; height:8px; border-radius:50%; border:1px solid var(--gold-light); position:relative; flex:none; }
+.hotspot .hdot::after{ content:''; position:absolute; inset:2px; background:var(--gold); border-radius:50%; }
+.hotspot .hline{ width:34px; height:1px; background:var(--line-strong); }
+.hotspot .hlabel{ font-size:11px; letter-spacing:0.08em; color:var(--text); white-space:nowrap; }
+.hotspot .hlabel small{ display:block; color:var(--text-faint); font-size:10px; letter-spacing:0.14em; margin-top:2px;}
+
+/* ============================================================
+   CASE SPECS
+============================================================ */
+.specs{ padding:16vh 0; background:var(--bg); }
+.specs-head{ text-align:center; margin-bottom:8vh; }
+.specs-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); border-top:1px solid var(--line); }
+.spec-item{ padding:40px 10px; border-bottom:1px solid var(--line); border-right:1px solid var(--line); text-align:center; }
+.spec-item:last-child{ border-right:none; }
+.spec-item .eyebrow{ margin-bottom:14px; }
+
+/* ============================================================
+   MOVEMENT HERO / EXPLODED
+============================================================ */
+.movement{ background:var(--bg-2); padding:18vh 0 10vh; }
+.movement-head{ display:grid; grid-template-columns:1.1fr 1fr; gap:6vw; align-items:end; margin-bottom:8vh;}
+.movement-head p{ max-width:420px; }
+.exploded{ min-height:220vh; background:var(--bg-2); position:relative; }
+.exploded-sticky{ position:sticky; top:0; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden;}
+.exploded-title{ position:absolute; top:90px; text-align:center; width:100%; padding:0 6vw; }
+.exploded-stage{ position:relative; width:min(70vw,520px); height:min(70vw,520px); }
+.ex-layer{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; will-change:transform; }
+.ex-layer svg{ width:100%; height:100%; overflow:visible; }
+.exploded-caption{ position:absolute; bottom:80px; text-align:center; width:100%; font-size:12px; letter-spacing:0.12em; color:var(--text-dim); padding:0 6vw;}
+
+/* ============================================================
+   TOURBILLON
+============================================================ */
+.tourbillon{ background:#050506; padding:20vh 0; text-align:center; position:relative; overflow:hidden; }
+.tourbillon::before{
+  content:''; position:absolute; top:50%; left:50%; width:60vw; height:60vw; max-width:700px; max-height:700px;
+  transform:translate(-50%,-50%); background:radial-gradient(circle, rgba(201,168,118,0.10), transparent 65%);
+  pointer-events:none;
+}
+.tb-stage{ width:min(46vw,320px); margin:6vh auto; position:relative; filter:drop-shadow(0 0 26px rgba(201,168,118,0.18)); }
+.tb-cage{ animation:spin60 6s linear infinite; transform-origin:center; }
+@keyframes spin60{ to{ transform:rotate(360deg); } }
+.tb-label{ margin-top:24px; font-size:11px; letter-spacing:0.16em; color:var(--gold-light); }
+.tb-label small{ display:block; color:var(--text-faint); margin-top:6px; letter-spacing:0.1em; }
+.tourbillon p{ max-width:520px; margin:6vh auto 0; text-align:center; }
+
+/* ============================================================
+   CRAFTSMANSHIP (horizontal)
+============================================================ */
+.craft{ background:var(--bg-1); padding:16vh 0 4vh; overflow:hidden; }
+.craft-head{ margin-bottom:6vh; }
+.craft-track{ display:flex; gap:2px; will-change:transform; }
+.craft-panel{ position:relative; flex:0 0 74vw; max-width:640px; height:66vh; overflow:hidden; }
+@media(min-width:900px){ .craft-panel{ flex:0 0 44vw; } }
+.craft-panel .cp-visual{ position:absolute; inset:0; transition:transform .8s cubic-bezier(.2,.7,.2,1); }
+.craft-panel:hover .cp-visual{ transform:scale(1.05); }
+.craft-panel::after{ content:''; position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,0.65) 0%, transparent 45%); pointer-events:none; }
+.craft-panel .cp-caption{ position:absolute; left:24px; bottom:24px; z-index:2; }
+.craft-panel .cp-caption h4{ text-shadow:0 4px 20px rgba(0,0,0,0.6); }
+.craft-panel .cp-caption .num{ font-family:var(--serif); color:var(--gold-light); font-size:13px; margin-bottom:6px; }
+.craft-panel .cp-caption h4{ font-size:22px; text-transform:uppercase; letter-spacing:0.04em; }
+
+/* ============================================================
+   MATERIALS
+============================================================ */
+.materials{ padding:16vh 0; background:var(--bg); }
+.materials-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1px; background:var(--line); margin-top:8vh; }
+.material-card{ background:var(--bg); padding:60px 30px; position:relative; overflow:hidden; height:280px; display:flex; flex-direction:column; justify-content:flex-end; box-shadow:inset 0 0 0 1px transparent; transition:box-shadow .4s ease; }
+.material-card:hover{ box-shadow:inset 0 0 0 1px rgba(201,168,118,0.35); }
+.material-card .mc-swatch{ position:absolute; inset:0; opacity:0.9; transition:transform .7s cubic-bezier(.2,.7,.2,1); }
+.material-card:hover .mc-swatch{ transform:scale(1.1) rotate(1deg); }
+.material-card::after{ content:''; position:absolute; inset:0; background:linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.55) 100%); pointer-events:none; }
+.material-card .mc-info{ position:relative; z-index:2; }
+.material-card h4{ font-size:19px; letter-spacing:0.04em; margin-bottom:6px; color:#fff; text-shadow:0 2px 12px rgba(0,0,0,0.5); }
+.material-card span{ font-size:11px; letter-spacing:0.12em; color:rgba(255,255,255,0.75); text-shadow:0 2px 8px rgba(0,0,0,0.5); }
+
+/* ============================================================
+   DIAL SELECTOR
+============================================================ */
+.dials{ padding:16vh 0; background:var(--bg-2); }
+.dials-layout{ display:grid; grid-template-columns:1fr 1fr; gap:6vw; align-items:center; margin-top:8vh; }
+.dial-preview{ display:flex; align-items:center; justify-content:center; }
+.dial-preview svg{ width:min(360px,80vw); }
+.dial-options{ display:flex; flex-direction:column; gap:2px; }
+.dial-opt{
+  display:flex; align-items:center; gap:18px; padding:18px 20px; border:1px solid transparent; text-align:left;
+  transition:background .3s ease, border-color .3s ease;
+}
+.dial-opt:hover, .dial-opt[aria-pressed="true"]{ background:var(--bg-3); border-color:var(--line-strong); }
+.dial-opt .swatch{ width:26px; height:26px; border-radius:50%; border:1px solid var(--line-strong); flex:none; }
+.dial-opt .dname{ font-size:14px; letter-spacing:0.04em; }
+.dial-opt .ddesc{ font-size:11px; color:var(--text-faint); margin-top:2px; }
+
+/* ============================================================
+   CONFIGURATOR
+============================================================ */
+.configurator{ padding:16vh 0 12vh; background:var(--bg); }
+.config-layout{ display:grid; grid-template-columns:1fr 1.1fr; gap:6vw; margin-top:8vh; align-items:start; }
+.config-preview{ position:sticky; top:120px; display:flex; flex-direction:column; align-items:center; }
+.config-preview svg{ width:min(420px,86vw); }
+.config-panel{ display:flex; flex-direction:column; gap:34px; }
+.config-group h5{ font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-dim); margin-bottom:14px; }
+.config-options{ display:flex; flex-wrap:wrap; gap:10px; }
+.config-chip{
+  padding:12px 18px; border:1px solid var(--line-strong); font-size:12px; letter-spacing:0.04em; color:var(--text-dim);
+  transition:all .3s ease; display:flex; align-items:center; gap:8px;
+}
+.config-chip .chip-swatch{ width:12px; height:12px; border-radius:50%; }
+.config-chip:hover{ border-color:var(--gold-dim); color:var(--text); }
+.config-chip[aria-pressed="true"]{ border-color:var(--gold); color:var(--text); background:rgba(201,168,118,0.08); }
+.config-summary{ border-top:1px solid var(--line); margin-top:10px; padding-top:30px; }
+.config-summary .eyebrow{ margin-bottom:10px; }
+.config-summary h3{ font-size:26px; text-transform:uppercase; margin-bottom:6px; }
+.config-summary .csub{ font-size:12px; color:var(--text-dim); letter-spacing:0.04em; margin-bottom:20px; }
+.config-price{ font-family:var(--serif); font-size:32px; color:var(--gold-light); margin-bottom:22px; }
+.config-price span{ font-family:var(--sans); font-size:11px; color:var(--text-faint); display:block; letter-spacing:0.12em; margin-bottom:4px;}
+
+/* ============================================================
+   COLLECTION (horizontal)
+============================================================ */
+.collection{ background:var(--bg-1); padding:16vh 0 6vh; overflow:hidden; }
+.coll-track{ display:flex; gap:2vw; will-change:transform; padding-top:6vh; }
+.coll-card{ flex:0 0 60vw; max-width:460px; }
+@media(min-width:900px){ .coll-card{ flex:0 0 30vw; } }
+.coll-visual{ height:56vh; background:var(--bg-3); position:relative; margin-bottom:22px; overflow:hidden; display:flex; align-items:center; justify-content:center;}
+.coll-visual svg{ width:70%; }
+.coll-index{ position:absolute; top:18px; left:18px; font-size:11px; letter-spacing:0.14em; color:var(--text-faint); }
+.coll-name{ font-size:11px; letter-spacing:0.14em; color:var(--text-dim); margin-bottom:6px; }
+.coll-card h3{ font-size:26px; text-transform:uppercase; margin-bottom:10px; }
+.coll-card p{ font-size:13px; margin-bottom:16px; }
+.coll-meta{ display:flex; justify-content:space-between; font-size:11px; letter-spacing:0.08em; color:var(--text-faint); border-top:1px solid var(--line); padding-top:14px; margin-bottom:16px; }
+
+/* ============================================================
+   PASSAGE OF TIME
+============================================================ */
+.passage{ min-height:160vh; background:#050506; position:relative; }
+.passage-sticky{ position:sticky; top:0; height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden;}
+.passage-ring{ position:relative; width:min(64vw,620px); aspect-ratio:1/1; }
+.passage-ring svg{ width:100%; height:100%; }
+.passage-text{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:10px; }
+.passage-text h3{ font-size:clamp(1.8rem,4.4vw,3.2rem); text-transform:uppercase; opacity:0; }
+
+/* ============================================================
+   SIGNATURE FINALE
+============================================================ */
+.finale{ min-height:150vh; background:#000; position:relative; }
+.finale-sticky{ position:sticky; top:0; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:26px; overflow:hidden;}
+.finale-sticky::before{
+  content:''; position:absolute; top:50%; left:50%; width:50vw; height:50vw; max-width:600px; max-height:600px;
+  transform:translate(-50%,-50%); background:radial-gradient(circle, rgba(201,168,118,0.08), transparent 68%); pointer-events:none;
+}
+.finale-watch{ width:min(30vw,220px); opacity:0.9; animation:slowspin 40s linear infinite; filter:drop-shadow(0 0 30px rgba(201,168,118,0.2)); position:relative; z-index:1; }
+@keyframes slowspin{ to{ transform:rotateY(360deg); } }
+.finale-tag{ font-size:11px; letter-spacing:0.24em; color:var(--gold-light); }
+.finale h2{ text-transform:uppercase; opacity:0; }
+.finale-final{ font-family:var(--serif); font-size:clamp(1.6rem,3vw,2.2rem); letter-spacing:0.08em; opacity:0; color:var(--gold-light); position:relative; z-index:1; text-shadow:0 0 44px rgba(201,168,118,0.4); }
+
+/* ============================================================
+   FOOTER
+============================================================ */
+footer{ background:#000; color:#EDEAE3; padding:10vh 0 4vh; }
+.footer-top{ display:grid; grid-template-columns:1.4fr repeat(3,1fr); gap:6vw; padding-bottom:8vh; border-bottom:1px solid rgba(237,234,227,0.1); }
+.footer-brand h3{ font-size:26px; letter-spacing:0.06em; margin-bottom:10px; }
+.footer-brand p{ font-size:12px; letter-spacing:0.1em; color:#8A7754; }
+.footer-col h5{ font-size:11px; letter-spacing:0.16em; color:#5E5D5A; margin-bottom:16px; text-transform:uppercase; }
+.footer-col a{ display:block; font-size:13px; color:#9A9994; padding:6px 0; transition:color .3s ease; }
+.footer-col a:hover{ color:#EDEAE3; }
+.footer-bottom{ display:flex; justify-content:space-between; align-items:center; padding-top:4vh; font-size:11px; letter-spacing:0.08em; color:#5E5D5A; flex-wrap:wrap; gap:16px;}
+
+/* ============================================================
+   SOUND TOGGLE + THEME TOGGLE (nav buttons styled above)
+============================================================ */
+.icon-btn{ display:inline-flex; align-items:center; justify-content:center; }
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media(max-width:992px){
+  .nav-center{ display:none; }
+  #menu-toggle{ display:flex; }
+  .movement-head{ grid-template-columns:1fr; gap:4vh; }
+  .specs-grid{ grid-template-columns:repeat(2,1fr); }
+  .dials-layout, .config-layout{ grid-template-columns:1fr; }
+  .config-preview{ position:relative; top:0; }
+  .footer-top{ grid-template-columns:1fr 1fr; gap:6vw 10vw; }
+}
+@media(max-width:600px){
+  .footer-top{ grid-template-columns:1fr; gap:5vh; }
+  .specs-grid{ grid-template-columns:1fr 1fr; }
+  .hero-bottom{ flex-direction:column; align-items:flex-start; gap:26px; }
+  .hero-cta-group{ align-items:flex-start; }
+}
+
+/* reduced motion */
+@media(prefers-reduced-motion:reduce){
+  *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+}
+body.reduced-motion .tb-cage{ animation:none; }
+body.reduced-motion .finale-watch{ animation:none; }
+</style>
+</head>
+<body>
+<div id="grain" aria-hidden="true"></div>
+
+<!-- ============ PRELOADER ============ -->
+<div id="preloader" role="status" aria-live="polite">
+  <div class="mark">AURELIS</div>
+  <div class="sub">HOROLOGY / 001</div>
+  <div class="bar-track"><div class="bar-fill" id="bar-fill"></div></div>
+  <div class="pct" id="pct">00</div>
+</div>
+
+<!-- ============ CUSTOM CURSOR ============ -->
+<div id="cursor" aria-hidden="true"></div>
+<div id="cursor-label" aria-hidden="true"></div>
+
+<!-- ============ NAV ============ -->
+<nav id="nav" aria-label="Primary">
+  <a href="#hero" class="nav-logo">AURELIS</a>
+  <div class="nav-center">
+    <a href="#macro" class="nav-link" data-section="macro">01 TIMEPIECE</a>
+    <a href="#craft" class="nav-link" data-section="craft">02 CRAFT</a>
+    <a href="#movement" class="nav-link" data-section="movement">03 MOVEMENT</a>
+    <a href="#configurator" class="nav-link" data-section="configurator">04 CONFIGURE</a>
+  </div>
+  <div class="nav-right">
+    <button id="theme-toggle" aria-pressed="false" aria-label="Toggle daylight theme"><span class="dot live"></span><span id="theme-label">DARKROOM</span></button>
+    <button id="sound-toggle" aria-pressed="false" aria-label="Toggle ambient sound"><span class="dot"></span><span id="sound-label">SOUND</span></button>
+    <span>EN</span>
+    <button id="menu-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div id="mobile-menu" aria-hidden="true">
+  <button class="close-btn" id="menu-close">CLOSE ✕</button>
+  <a href="#macro">01 Timepiece</a>
+  <a href="#craft">02 Craft</a>
+  <a href="#movement">03 Movement</a>
+  <a href="#configurator">04 Configure</a>
+</div>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <div id="spotlight" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-top">
+      <span class="hero-tag">AURELIS / A-01</span>
+      <span class="hero-tag" data-cursor="INSPECT">BUILT TO OUTLIVE THE MOMENT.</span>
+    </div>
+    <div class="hero-title">
+      <small>AUTOMATIC TOURBILLON</small>
+      <h1 class="type-hero">TIME,<br>REFINED.</h1>
+    </div>
+    <div class="hero-bottom">
+      <div class="hero-specs">
+        AUTOMATIC TOURBILLON<br>
+        42&nbsp;MM&nbsp;/&nbsp;18K ROSE GOLD
+      </div>
+      <div class="hero-cta-group">
+        <a href="#macro" class="btn magnetic" data-cursor="DISCOVER">DISCOVER THE TIMEPIECE <span class="arrow-i">→</span></a>
+        <span class="scroll-hint">SCROLL TO EXPLORE <span class="arrow">↓</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MANIFESTO ============ -->
+<section class="manifesto" id="manifesto">
+  <div class="container manifesto-inner">
+    <h2 class="type-xl">
+      <div class="manifesto-line"><span>EVERY SECOND</span></div>
+      <div class="manifesto-line"><span>HAS A</span></div>
+      <div class="manifesto-line"><span class="serif-accent gold-glow" style="color:var(--gold-light)">MECHANISM.</span></div>
+    </h2>
+  </div>
+</section>
+
+<!-- ============ MACRO INSPECTION ============ -->
+<section class="macro" id="macro">
+  <div class="macro-sticky">
+    <div class="macro-title">
+      <p class="eyebrow">01 / TIMEPIECE</p>
+      <h3 class="type-md" style="margin-top:14px;">Every surface has a purpose.</h3>
+    </div>
+    <div class="macro-stage" id="macro-stage">
+      <svg viewBox="0 0 400 400" id="macro-watch" style="width:100%;height:100%;">
+        <defs>
+          <radialGradient id="mg-case" cx="32%" cy="26%" r="78%">
+            <stop offset="0%" stop-color="#FBF1DC"/>
+            <stop offset="16%" stop-color="#EFE0C2"/>
+            <stop offset="38%" stop-color="#D8B98A"/>
+            <stop offset="58%" stop-color="#C9A876"/>
+            <stop offset="80%" stop-color="#8C7047"/>
+            <stop offset="100%" stop-color="#4A3B24"/>
+          </radialGradient>
+          <linearGradient id="mg-case-edge" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FBF1DC" stop-opacity="0.9"/>
+            <stop offset="50%" stop-color="#C9A876" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#3A2E1B" stop-opacity="0.8"/>
+          </linearGradient>
+          <radialGradient id="mg-dial" cx="50%" cy="40%" r="70%">
+            <stop offset="0%" stop-color="#2B2B2E"/>
+            <stop offset="100%" stop-color="#0C0C0D"/>
+          </radialGradient>
+          <pattern id="mg-guilloche" width="8" height="8" patternUnits="userSpaceOnUse">
+            <circle cx="4" cy="4" r="3.6" fill="none" stroke="rgba(201,168,118,0.10)" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <circle cx="200" cy="200" r="180" fill="url(#mg-case)"/>
+        <circle cx="200" cy="200" r="180" fill="none" stroke="url(#mg-case-edge)" stroke-width="2" opacity="0.6"/>
+        <circle cx="200" cy="200" r="163" fill="none" stroke="#3A2E1B" stroke-width="1" opacity="0.5"/>
+        <circle cx="200" cy="200" r="158" fill="#0A0A0B"/>
+        <circle cx="200" cy="200" r="150" fill="url(#mg-dial)"/>
+        <circle cx="200" cy="200" r="150" fill="url(#mg-guilloche)"/>
+        <circle cx="200" cy="200" r="150" fill="none" stroke="rgba(201,168,118,0.35)" stroke-width="1"/>
+        <g stroke="#C9A876" stroke-width="1.4">
+          <line x1="200" y1="60" x2="200" y2="78"/>
+          <line x1="200" y1="322" x2="200" y2="340"/>
+          <line x1="60" y1="200" x2="78" y2="200"/>
+          <line x1="322" y1="200" x2="340" y2="200"/>
+        </g>
+        <circle cx="200" cy="270" r="34" fill="none" stroke="#C9A876" stroke-width="1" opacity="0.7"/>
+        <circle cx="200" cy="270" r="4" fill="#C9A876"/>
+        <g stroke="#EDEAE3" stroke-linecap="round">
+          <line x1="200" y1="200" x2="200" y2="120" stroke-width="3"/>
+          <line x1="200" y1="200" x2="248" y2="178" stroke-width="2.4"/>
+        </g>
+        <circle cx="200" cy="200" r="5" fill="#C9A876"/>
+        <rect x="376" y="188" width="18" height="24" rx="3" fill="url(#mg-case)"/>
+      </svg>
+      <div class="hotspot" id="hs1" style="top:6%; left:44%;"><span class="hdot"></span><span class="hline"></span><span class="hlabel">01 / HAND-FINISHED BEVEL<small>Polished by hand, angle by angle</small></span></div>
+      <div class="hotspot" id="hs2" style="top:38%; left:82%;"><span class="hdot"></span><span class="hline"></span><span class="hlabel">02 / DOMED SAPPHIRE<small>Scratch-resistant, distortion-free</small></span></div>
+      <div class="hotspot" id="hs3" style="top:16%; left:8%;"><span class="hdot"></span><span class="hline"></span><span class="hlabel">03 / APPLIED INDICES<small>Set individually, not printed</small></span></div>
+      <div class="hotspot" id="hs4" style="top:70%; left:10%;"><span class="hdot"></span><span class="hline"></span><span class="hlabel">04 / GUILLOCHÉ DIAL<small>Cut on a century-old rose engine</small></span></div>
+      <div class="hotspot" id="hs5" style="top:82%; left:66%;"><span class="hdot"></span><span class="hline"></span><span class="hlabel">05 / MICRO-ADJUSTMENT CROWN<small>Precision to the fraction of a second</small></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CASE SPECS ============ -->
+<section class="specs" id="case-specs">
+  <div class="container">
+    <div class="specs-head">
+      <p class="eyebrow">SILHOUETTE</p>
+      <h2 class="type-lg" style="text-transform:uppercase; margin-top:16px;">Sculpted for the wrist.</h2>
+    </div>
+    <div class="specs-grid">
+      <div class="spec-item"><p class="eyebrow">CASE</p><div class="type-num">42<span style="font-size:0.4em;">MM</span></div></div>
+      <div class="spec-item"><p class="eyebrow">THICKNESS</p><div class="type-num">11.8<span style="font-size:0.4em;">MM</span></div></div>
+      <div class="spec-item"><p class="eyebrow">MATERIAL</p><div class="type-num" style="font-size:clamp(1.4rem,3vw,2.2rem);">18K ROSE GOLD</div></div>
+      <div class="spec-item"><p class="eyebrow">CRYSTAL</p><div class="type-num" style="font-size:clamp(1.4rem,3vw,2.2rem);">SAPPHIRE</div></div>
+      <div class="spec-item"><p class="eyebrow">WATER RESISTANCE</p><div class="type-num">100<span style="font-size:0.4em;">M</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MOVEMENT HERO ============ -->
+<section class="movement" id="movement">
+  <div class="container">
+    <div class="movement-head">
+      <h2 class="type-xl" style="text-transform:uppercase;">THE HEART<br>OF AURELIS.</h2>
+      <p>The AUR-01 calibre is assembled and regulated entirely by hand, over one hundred and forty hours, inside our atelier. Every bridge is finished twice: once for function, once for beauty.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EXPLODED MOVEMENT ============ -->
+<section class="exploded" id="exploded">
+  <div class="exploded-sticky">
+    <div class="exploded-title">
+      <p class="eyebrow">MOVEMENT / AUR-01</p>
+      <h3 class="type-md" style="margin-top:12px;">PRECISION IS AN ASSEMBLY<br>OF MOMENTS.</h3>
+    </div>
+    <div class="exploded-stage" id="exploded-stage">
+      <div class="ex-layer" id="ex-case">
+        <svg viewBox="0 0 300 300"><circle cx="150" cy="150" r="140" fill="none" stroke="#3a3a3d" stroke-width="2"/></svg>
+      </div>
+      <div class="ex-layer" id="ex-bridge1">
+        <svg viewBox="0 0 300 300"><path d="M80 90 Q150 60 220 90 L210 140 Q150 120 90 140 Z" fill="#3a3a3d" stroke="#C9A876" stroke-width="1"/></svg>
+      </div>
+      <div class="ex-layer" id="ex-bridge2">
+        <svg viewBox="0 0 300 300"><path d="M70 190 Q150 220 230 190 L220 150 Q150 175 80 150 Z" fill="#2c2c2f" stroke="#C9A876" stroke-width="1"/></svg>
+      </div>
+      <div class="ex-layer" id="ex-barrel">
+        <svg viewBox="0 0 300 300"><circle cx="105" cy="150" r="34" fill="#25262a" stroke="#8A7754" stroke-width="1.5"/><circle cx="105" cy="150" r="6" fill="#C9A876"/></svg>
+      </div>
+      <div class="ex-layer" id="ex-gears">
+        <svg viewBox="0 0 300 300">
+          <g fill="none" stroke="#C9A876" stroke-width="1.5">
+            <circle cx="170" cy="120" r="18"/><circle cx="170" cy="120" r="4" fill="#C9A876"/>
+            <circle cx="205" cy="150" r="14"/><circle cx="205" cy="150" r="3" fill="#C9A876"/>
+          </g>
+        </svg>
+      </div>
+      <div class="ex-layer" id="ex-balance">
+        <svg viewBox="0 0 300 300"><circle cx="150" cy="150" r="30" fill="none" stroke="#EDEAE3" stroke-width="1.4"/><circle cx="150" cy="150" r="3" fill="#EDEAE3"/><line x1="120" y1="150" x2="180" y2="150" stroke="#EDEAE3" stroke-width="1"/></svg>
+      </div>
+      <div class="ex-layer" id="ex-dial">
+        <svg viewBox="0 0 300 300"><circle cx="150" cy="150" r="120" fill="#0c0c0d" stroke="rgba(201,168,118,0.4)" stroke-width="1"/></svg>
+      </div>
+      <div class="ex-layer" id="ex-hands">
+        <svg viewBox="0 0 300 300"><g stroke="#EDEAE3" stroke-width="2.4" stroke-linecap="round"><line x1="150" y1="150" x2="150" y2="95"/><line x1="150" y1="150" x2="185" y2="130"/></g></svg>
+      </div>
+    </div>
+    <p class="exploded-caption">Bridges, gears, balance wheel and barrel — separated, understood, reassembled.</p>
+  </div>
+</section>
+
+<!-- ============ TOURBILLON ============ -->
+<section class="tourbillon" id="tourbillon">
+  <p class="eyebrow">03 / MOVEMENT</p>
+  <h2 class="type-lg" style="text-transform:uppercase; margin-top:16px;">ONE MINUTE.<br>IN CONSTANT MOTION.</h2>
+  <div class="tb-stage">
+    <svg viewBox="0 0 200 200" class="tb-cage" aria-hidden="true">
+      <circle cx="100" cy="100" r="90" fill="none" stroke="#3a3a3d" stroke-width="1"/>
+      <circle cx="100" cy="100" r="70" fill="none" stroke="#C9A876" stroke-width="1.4"/>
+      <g stroke="#EDEAE3" stroke-width="1.6">
+        <line x1="100" y1="20" x2="100" y2="45"/>
+        <line x1="100" y1="180" x2="100" y2="155"/>
+        <line x1="20" y1="100" x2="45" y2="100"/>
+        <line x1="180" y1="100" x2="155" y2="100"/>
+      </g>
+      <circle cx="100" cy="100" r="34" fill="none" stroke="#EDEAE3" stroke-width="1.2"/>
+      <circle cx="100" cy="100" r="4" fill="#C9A876"/>
+    </svg>
+  </div>
+  <div class="tb-label">TOURBILLON<small>60 SEC / REVOLUTION</small></div>
+  <p>Gravity pulls unevenly on a still balance wheel — the smallest source of error in any mechanical watch. The tourbillon rotates the entire regulating organ once a minute, averaging that error into silence.</p>
+</section>
+
+<!-- ============ CRAFTSMANSHIP ============ -->
+<section class="craft" id="craft">
+  <div class="container craft-head">
+    <p class="eyebrow">02 / CRAFT</p>
+    <h2 class="type-lg" style="text-transform:uppercase; margin-top:16px;">MADE BY HAND.<br>FINISHED BY EYE.</h2>
+  </div>
+  <div class="craft-track" id="craft-track">
+    <div class="craft-panel"><div class="cp-visual" style="background:radial-gradient(circle at 30% 30%, #d8c39a, #6b5636 70%, #1a1509);"></div><div class="cp-caption"><div class="num">01</div><h4>POLISHING</h4></div></div>
+    <div class="craft-panel"><div class="cp-visual" style="background:conic-gradient(from 120deg, #2a2b2e, #565860, #2a2b2e);"></div><div class="cp-caption"><div class="num">02</div><h4>ANGLAGE</h4></div></div>
+    <div class="craft-panel"><div class="cp-visual" style="background:radial-gradient(circle at 60% 40%, #3d3f44, #101113 75%);"></div><div class="cp-caption"><div class="num">03</div><h4>ASSEMBLY</h4></div></div>
+    <div class="craft-panel"><div class="cp-visual" style="background:linear-gradient(135deg, #C9A876, #2c2418 80%);"></div><div class="cp-caption"><div class="num">04</div><h4>REGULATION</h4></div></div>
+    <div class="craft-panel"><div class="cp-visual" style="background:radial-gradient(circle at 40% 60%, #e4d4af, #4a3f2a 70%);"></div><div class="cp-caption"><div class="num">05</div><h4>FINAL INSPECTION</h4></div></div>
+  </div>
+</section>
+
+<!-- ============ MATERIALS ============ -->
+<section class="materials" id="materials">
+  <div class="container">
+    <p class="eyebrow">MATERIALS</p>
+    <h2 class="type-lg" style="text-transform:uppercase; margin-top:16px;">Chosen. Not decorated.</h2>
+    <div class="materials-grid">
+      <div class="material-card"><div class="mc-swatch" style="background:radial-gradient(circle at 30% 20%,#f0dfb8,#a9814e 55%,#4c3c22);"></div><div class="mc-info"><h4>18K ROSE GOLD</h4><span>Case &amp; bezel</span></div></div>
+      <div class="material-card"><div class="mc-swatch" style="background:linear-gradient(135deg,#c7cbd1,#6c7075 60%,#33363a);"></div><div class="mc-info"><h4>TITANIUM</h4><span>Lightweight case option</span></div></div>
+      <div class="material-card"><div class="mc-swatch" style="background:radial-gradient(circle at 70% 30%,#3a3a3d,#0c0c0d 70%);"></div><div class="mc-info"><h4>CERAMIC</h4><span>Scratch-resistant bezel</span></div></div>
+      <div class="material-card"><div class="mc-swatch" style="background:linear-gradient(160deg,rgba(255,255,255,0.5),rgba(160,180,200,0.15) 60%,#10151a);"></div><div class="mc-info"><h4>SAPPHIRE</h4><span>Crystal &amp; caseback</span></div></div>
+      <div class="material-card"><div class="mc-swatch" style="background:repeating-linear-gradient(120deg,#232323,#232323 4px,#2b2b2b 4px,#2b2b2b 8px);"></div><div class="mc-info"><h4>ALCANTARA</h4><span>Interior strap lining</span></div></div>
+      <div class="material-card"><div class="mc-swatch" style="background:radial-gradient(circle at 30% 30%,#5a3a2b,#2a1a10 75%);"></div><div class="mc-info"><h4>ALLIGATOR LEATHER</h4><span>Hand-stitched strap</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIAL COLLECTION ============ -->
+<section class="dials" id="dial-select">
+  <div class="container">
+    <p class="eyebrow">THE FACE OF TIME</p>
+    <div class="dials-layout">
+      <div class="dial-preview">
+        <svg viewBox="0 0 300 300" id="dial-preview-svg">
+          <defs>
+            <radialGradient id="dial-obsidian" cx="45%" cy="35%" r="70%"><stop offset="0%" stop-color="#2b2b2e"/><stop offset="100%" stop-color="#050506"/></radialGradient>
+            <radialGradient id="dial-ivory" cx="45%" cy="35%" r="70%"><stop offset="0%" stop-color="#faf5e8"/><stop offset="100%" stop-color="#dccfa8"/></radialGradient>
+            <radialGradient id="dial-midnight" cx="45%" cy="35%" r="70%"><stop offset="0%" stop-color="#1c2740"/><stop offset="100%" stop-color="#060a14"/></radialGradient>
+            <radialGradient id="dial-burgundy" cx="45%" cy="35%" r="70%"><stop offset="0%" stop-color="#5c1f27"/><stop offset="100%" stop-color="#1a0407"/></radialGradient>
+            <radialGradient id="dial-champagne" cx="45%" cy="35%" r="70%"><stop offset="0%" stop-color="#e9d6ad"/><stop offset="100%" stop-color="#a98a56"/></radialGradient>
+          </defs>
+          <circle cx="150" cy="150" r="140" fill="url(#mg-case)"/>
+          <circle cx="150" cy="150" r="120" class="dial-face" fill="url(#dial-obsidian)"/>
+          <circle cx="150" cy="150" r="120" fill="none" stroke="rgba(201,168,118,0.4)" stroke-width="1"/>
+          <g stroke="#C9A876" stroke-width="1.2"><line x1="150" y1="40" x2="150" y2="56"/><line x1="150" y1="260" x2="150" y2="244"/><line x1="40" y1="150" x2="56" y2="150"/><line x1="260" y1="150" x2="244" y2="150"/></g>
+          <g stroke="#EDEAE3" stroke-linecap="round"><line x1="150" y1="150" x2="150" y2="90" stroke-width="2.6"/><line x1="150" y1="150" x2="190" y2="132" stroke-width="2"/></g>
+          <circle cx="150" cy="150" r="4" fill="#C9A876"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="type-lg" style="text-transform:uppercase; margin-bottom:6vh;">The face of time.</h2>
+        <div class="dial-options" role="group" aria-label="Dial color">
+          <button class="dial-opt" data-dial="dial-obsidian" aria-pressed="true"><span class="swatch" style="background:radial-gradient(circle at 35% 30%,#3a3a3d,#050506);"></span><span><span class="dname">OBSIDIAN</span><span class="ddesc" style="display:block;">Deep black, brushed sunburst</span></span></button>
+          <button class="dial-opt" data-dial="dial-ivory" aria-pressed="false"><span class="swatch" style="background:radial-gradient(circle at 35% 30%,#faf5e8,#dccfa8);"></span><span><span class="dname">IVORY</span><span class="ddesc" style="display:block;">Warm white, fine grain texture</span></span></button>
+          <button class="dial-opt" data-dial="dial-midnight" aria-pressed="false"><span class="swatch" style="background:radial-gradient(circle at 35% 30%,#2a3a5c,#060a14);"></span><span><span class="dname">MIDNIGHT BLUE</span><span class="ddesc" style="display:block;">Deep blue, guilloché waves</span></span></button>
+          <button class="dial-opt" data-dial="dial-burgundy" aria-pressed="false"><span class="swatch" style="background:radial-gradient(circle at 35% 30%,#6c232c,#1a0407);"></span><span><span class="dname">BURGUNDY</span><span class="ddesc" style="display:block;">Wine red, radial finish</span></span></button>
+          <button class="dial-opt" data-dial="dial-champagne" aria-pressed="false"><span class="swatch" style="background:radial-gradient(circle at 35% 30%,#e9d6ad,#a98a56);"></span><span><span class="dname">CHAMPAGNE</span><span class="ddesc" style="display:block;">Warm gold, satin texture</span></span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONFIGURATOR ============ -->
+<section class="configurator" id="configurator">
+  <div class="container">
+    <p class="eyebrow">04 / CONFIGURE</p>
+    <h2 class="type-lg" style="text-transform:uppercase; margin-top:16px;">MAKE IT YOURS.</h2>
+    <div class="config-layout">
+      <div class="config-preview">
+        <svg viewBox="0 0 340 420" id="config-svg">
+          <defs>
+            <linearGradient id="strap-black" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a2a2c"/><stop offset="100%" stop-color="#0c0c0d"/></linearGradient>
+            <linearGradient id="strap-brown" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6b4527"/><stop offset="100%" stop-color="#301f10"/></linearGradient>
+            <linearGradient id="strap-burgundy" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5c1f27"/><stop offset="100%" stop-color="#210709"/></linearGradient>
+            <linearGradient id="strap-titanium" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c7cbd1"/><stop offset="100%" stop-color="#6c7075"/></linearGradient>
+            <radialGradient id="case-rose-gold" cx="32%" cy="26%" r="78%"><stop offset="0%" stop-color="#FBF1DC"/><stop offset="18%" stop-color="#EFE0C2"/><stop offset="42%" stop-color="#D8B98A"/><stop offset="62%" stop-color="#C9A876"/><stop offset="82%" stop-color="#8C7047"/><stop offset="100%" stop-color="#4A3B24"/></radialGradient>
+            <radialGradient id="case-steel" cx="32%" cy="26%" r="78%"><stop offset="0%" stop-color="#f5f6f8"/><stop offset="30%" stop-color="#dfe2e6"/><stop offset="55%" stop-color="#aeb2b8"/><stop offset="80%" stop-color="#6b6f75"/><stop offset="100%" stop-color="#33363a"/></radialGradient>
+            <radialGradient id="case-titanium" cx="32%" cy="26%" r="78%"><stop offset="0%" stop-color="#e8eaed"/><stop offset="30%" stop-color="#c6cace"/><stop offset="55%" stop-color="#9298a0"/><stop offset="80%" stop-color="#5b5f65"/><stop offset="100%" stop-color="#2a2c2f"/></radialGradient>
+            <radialGradient id="case-ceramic" cx="32%" cy="26%" r="78%"><stop offset="0%" stop-color="#5c5c60"/><stop offset="30%" stop-color="#39393c"/><stop offset="60%" stop-color="#1c1c1e"/><stop offset="100%" stop-color="#040404"/></radialGradient>
+            <filter id="cfg-shadow" x="-40%" y="-40%" width="180%" height="180%">
+              <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000000" flood-opacity="0.45"/>
+            </filter>
+          </defs>
+          <g filter="url(#cfg-shadow)">
+          <rect id="cfg-strap-top" x="140" y="0" width="60" height="120" rx="10" fill="url(#strap-black)"/>
+          <rect id="cfg-strap-bottom" x="140" y="300" width="60" height="120" rx="10" fill="url(#strap-black)"/>
+          <circle cx="170" cy="200" r="130" id="cfg-case" fill="url(#case-rose-gold)"/>
+          <circle cx="170" cy="200" r="118" fill="none" stroke="#000" stroke-width="1" opacity="0.4"/>
+          <circle cx="170" cy="200" r="112" fill="#0A0A0B"/>
+          <circle cx="170" cy="200" r="105" id="cfg-dial" fill="url(#dial-obsidian)"/>
+          <circle cx="170" cy="200" r="105" fill="none" stroke="rgba(201,168,118,0.4)" stroke-width="1"/>
+          <g stroke="#C9A876" stroke-width="1.2"><line x1="170" y1="105" x2="170" y2="120"/><line x1="170" y1="295" x2="170" y2="280"/><line x1="65" y1="200" x2="80" y2="200"/><line x1="275" y1="200" x2="260" y2="200"/></g>
+          <g stroke="#EDEAE3" stroke-linecap="round"><line x1="170" y1="200" x2="170" y2="150" stroke-width="2.6"/><line x1="170" y1="200" x2="205" y2="180" stroke-width="2"/></g>
+          <circle cx="170" cy="200" r="4" fill="#C9A876"/>
+          <rect x="296" y="188" width="14" height="24" rx="3" id="cfg-crown" fill="url(#case-rose-gold)"/>
+          <rect id="cfg-buckle" x="152" y="392" width="36" height="18" rx="3" fill="url(#case-rose-gold)"/>
+          </g>
+        </svg>
+      </div>
+      <div class="config-panel">
+        <div class="config-group">
+          <h5>Case</h5>
+          <div class="config-options" role="group" aria-label="Case material" id="opt-case">
+            <button class="config-chip" data-val="Rose Gold" data-grad="case-rose-gold" aria-pressed="true"><span class="chip-swatch" style="background:#C9A876;"></span>Rose Gold</button>
+            <button class="config-chip" data-val="Brushed Steel" data-grad="case-steel" aria-pressed="false"><span class="chip-swatch" style="background:#9ea3aa;"></span>Brushed Steel</button>
+            <button class="config-chip" data-val="Titanium" data-grad="case-titanium" aria-pressed="false"><span class="chip-swatch" style="background:#8d9299;"></span>Titanium</button>
+            <button class="config-chip" data-val="Black Ceramic" data-grad="case-ceramic" aria-pressed="false"><span class="chip-swatch" style="background:#222225;"></span>Black Ceramic</button>
+          </div>
+        </div>
+        <div class="config-group">
+          <h5>Dial</h5>
+          <div class="config-options" role="group" aria-label="Dial color" id="opt-dial">
+            <button class="config-chip" data-val="Obsidian" data-grad="dial-obsidian" aria-pressed="true"><span class="chip-swatch" style="background:#0c0c0d;"></span>Obsidian</button>
+            <button class="config-chip" data-val="Ivory" data-grad="dial-ivory" aria-pressed="false"><span class="chip-swatch" style="background:#dccfa8;"></span>Ivory</button>
+            <button class="config-chip" data-val="Midnight" data-grad="dial-midnight" aria-pressed="false"><span class="chip-swatch" style="background:#1c2740;"></span>Midnight</button>
+            <button class="config-chip" data-val="Burgundy" data-grad="dial-burgundy" aria-pressed="false"><span class="chip-swatch" style="background:#5c1f27;"></span>Burgundy</button>
+          </div>
+        </div>
+        <div class="config-group">
+          <h5>Strap</h5>
+          <div class="config-options" role="group" aria-label="Strap" id="opt-strap">
+            <button class="config-chip" data-val="Black Leather" data-grad="strap-black" aria-pressed="true"><span class="chip-swatch" style="background:#141414;"></span>Black Leather</button>
+            <button class="config-chip" data-val="Brown Leather" data-grad="strap-brown" aria-pressed="false"><span class="chip-swatch" style="background:#6b4527;"></span>Brown Leather</button>
+            <button class="config-chip" data-val="Burgundy Leather" data-grad="strap-burgundy" aria-pressed="false"><span class="chip-swatch" style="background:#5c1f27;"></span>Burgundy Leather</button>
+            <button class="config-chip" data-val="Titanium Bracelet" data-grad="strap-titanium" aria-pressed="false"><span class="chip-swatch" style="background:#9ea3aa;"></span>Titanium Bracelet</button>
+          </div>
+        </div>
+        <div class="config-group">
+          <h5>Buckle</h5>
+          <div class="config-options" role="group" aria-label="Buckle finish" id="opt-buckle">
+            <button class="config-chip" data-val="Polished" data-grad="case-rose-gold" aria-pressed="true"><span class="chip-swatch" style="background:#C9A876;"></span>Polished</button>
+            <button class="config-chip" data-val="Brushed" data-grad="case-steel" aria-pressed="false"><span class="chip-swatch" style="background:#9ea3aa;"></span>Brushed</button>
+            <button class="config-chip" data-val="Black" data-grad="case-ceramic" aria-pressed="false"><span class="chip-swatch" style="background:#222225;"></span>Black</button>
+          </div>
+        </div>
+        <div class="config-summary">
+          <p class="eyebrow">CURRENT CONFIGURATION</p>
+          <h3 id="cfg-name">AURELIS A-01</h3>
+          <p class="csub" id="cfg-desc">42 MM · AUTOMATIC TOURBILLON · Rose Gold · Obsidian · Black Leather · Polished</p>
+          <div class="config-price"><span>STARTING AT</span>$18,900</div>
+          <a href="#footer" class="btn magnetic" data-cursor="CONFIGURE">REQUEST PRIVATE COMMISSION <span class="arrow-i">→</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COLLECTION ============ -->
+<section class="collection" id="collection">
+  <div class="container">
+    <p class="eyebrow">THE AURELIS COLLECTION</p>
+  </div>
+  <div class="coll-track" id="coll-track">
+    <div class="coll-card">
+      <div class="coll-visual"><span class="coll-index">A-01</span><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="url(#mg-case)"/><circle cx="100" cy="100" r="72" fill="#0c0c0d"/><circle cx="100" cy="100" r="34" fill="none" stroke="#C9A876" stroke-width="1"/></svg></div>
+      <div class="coll-name">A-01</div><h3>THE TOURBILLON</h3>
+      <p>Our founding calibre — a visible, ceaselessly rotating regulator, set beneath a domed sapphire crystal.</p>
+      <div class="coll-meta"><span>AUTOMATIC TOURBILLON</span><span>$18,900</span></div>
+      <a href="#configurator" class="btn-ghost btn" data-cursor="EXPLORE">EXPLORE COLLECTION <span class="arrow-i">→</span></a>
+    </div>
+    <div class="coll-card">
+      <div class="coll-visual"><span class="coll-index">A-02</span><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="url(#case-steel)" fill-opacity="1"/><circle cx="100" cy="100" r="72" fill="#0c0c0d"/><circle cx="60" cy="120" r="18" fill="none" stroke="#EDEAE3" stroke-width="1"/><circle cx="140" cy="120" r="18" fill="none" stroke="#EDEAE3" stroke-width="1"/></svg></div>
+      <div class="coll-name">A-02</div><h3>THE CHRONOGRAPH</h3>
+      <p>A column-wheel chronograph built for instruments that measure moments, not just hours.</p>
+      <div class="coll-meta"><span>MANUAL CHRONOGRAPH</span><span>$24,600</span></div>
+      <a href="#configurator" class="btn-ghost btn" data-cursor="EXPLORE">EXPLORE COLLECTION <span class="arrow-i">→</span></a>
+    </div>
+    <div class="coll-card">
+      <div class="coll-visual"><span class="coll-index">A-03</span><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="url(#case-titanium)"/><circle cx="100" cy="100" r="72" fill="#0c0c0d"/><circle cx="100" cy="100" r="50" fill="none" stroke="#C9A876" stroke-width="1"/><circle cx="100" cy="80" r="8" fill="none" stroke="#EDEAE3" stroke-width="1"/></svg></div>
+      <div class="coll-name">A-03</div><h3>THE PERPETUAL</h3>
+      <p>A perpetual calendar that will not require correction until the year 2100.</p>
+      <div class="coll-meta"><span>PERPETUAL CALENDAR</span><span>$41,200</span></div>
+      <a href="#configurator" class="btn-ghost btn" data-cursor="EXPLORE">EXPLORE COLLECTION <span class="arrow-i">→</span></a>
+    </div>
+    <div class="coll-card">
+      <div class="coll-visual"><span class="coll-index">A-X</span><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="url(#case-ceramic)"/><circle cx="100" cy="100" r="72" fill="none" stroke="#3a3a3d" stroke-width="1"/><circle cx="100" cy="100" r="30" fill="none" stroke="#EDEAE3" stroke-width="1"/><line x1="100" y1="40" x2="100" y2="160" stroke="#3a3a3d"/><line x1="40" y1="100" x2="160" y2="100" stroke="#3a3a3d"/></svg></div>
+      <div class="coll-name">A-X</div><h3>THE SKELETON</h3>
+      <p>Every bridge hand-bevelled and left fully open — the mechanism as the only ornament.</p>
+      <div class="coll-meta"><span>OPENWORKED AUTOMATIC</span><span>$29,800</span></div>
+      <a href="#configurator" class="btn-ghost btn" data-cursor="EXPLORE">EXPLORE COLLECTION <span class="arrow-i">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PASSAGE OF TIME ============ -->
+<section class="passage" id="passage">
+  <div class="passage-sticky">
+    <div class="passage-ring">
+      <svg viewBox="0 0 400 400" id="passage-svg">
+        <circle cx="200" cy="200" r="180" fill="none" stroke="rgba(201,168,118,0.2)" stroke-width="1"/>
+        <g id="passage-ticks" stroke="rgba(237,234,227,0.3)" stroke-width="1"></g>
+        <g id="passage-hand" stroke="#C9A876" stroke-width="2" stroke-linecap="round" style="transform-origin:200px 200px;">
+          <line x1="200" y1="200" x2="200" y2="60"/>
+        </g>
+        <circle cx="200" cy="200" r="4" fill="#C9A876"/>
+      </svg>
+      <div class="passage-text">
+        <h3 id="passage-l1">TIME DOES NOT<br>WAIT.</h3>
+        <h3 id="passage-l2" style="color:var(--gold-light);">NEITHER SHOULD<br>CRAFT.</h3>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section class="finale" id="finale">
+  <div class="finale-sticky">
+    <svg viewBox="0 0 200 200" class="finale-watch"><circle cx="100" cy="100" r="90" fill="url(#mg-case)"/><circle cx="100" cy="100" r="72" fill="#0c0c0d"/><circle cx="100" cy="100" r="4" fill="#C9A876"/><line x1="100" y1="100" x2="100" y2="50" stroke="#EDEAE3" stroke-width="2"/><line x1="100" y1="100" x2="130" y2="118" stroke="#EDEAE3" stroke-width="1.6"/></svg>
+    <span class="finale-tag">AURELIS A-01</span>
+    <h2 class="type-xl" id="finale-h">SOME THINGS<br>ARE MADE<br>TO LAST.</h2>
+    <div class="finale-final" id="finale-final">TIME, REFINED.</div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer id="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>AURELIS HOROLOGY</h3>
+        <p>TIME, REFINED.</p>
+      </div>
+      <div class="footer-col"><h5>Explore</h5>
+        <a href="#macro">Timepieces</a><a href="#craft">Craft</a><a href="#movement">Movement</a><a href="#configurator">Configure</a>
+      </div>
+      <div class="footer-col"><h5>Contact</h5>
+        <a href="#footer">Private Commissions</a><a href="#footer">Concierge</a><a href="#footer">Ateliers</a>
+      </div>
+      <div class="footer-col"><h5>Follow</h5>
+        <a href="#footer">Instagram</a><a href="#footer">YouTube</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>AURELIS HOROLOGY / SWITZERLAND</span>
+      <span style="display:flex; gap:20px;"><a href="#footer">Privacy</a><a href="#footer">Terms</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lenis/1.1.13/lenis.min.js"></script>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   DATA LAYER (data-driven architecture)
+============================================================ */
+const CONFIG_DATA = {
+  case: { "Rose Gold":"case-rose-gold", "Brushed Steel":"case-steel", "Titanium":"case-titanium", "Black Ceramic":"case-ceramic" },
+  dial: { "Obsidian":"dial-obsidian", "Ivory":"dial-ivory", "Midnight":"dial-midnight", "Burgundy":"dial-burgundy" },
+  strap:{ "Black Leather":"strap-black", "Brown Leather":"strap-brown", "Burgundy Leather":"strap-burgundy", "Titanium Bracelet":"strap-titanium" },
+  buckle:{ "Polished":"case-rose-gold", "Brushed":"case-steel", "Black":"case-ceramic" }
+};
+
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+if(prefersReduced) document.body.classList.add('reduced-motion');
+
+/* ============================================================
+   PRELOADER
+============================================================ */
+const barFill = document.getElementById('bar-fill');
+const pctEl = document.getElementById('pct');
+const preloader = document.getElementById('preloader');
+let pct = 0;
+function tickLoader(){
+  pct += Math.random()*14 + 6;
+  if(pct >= 100){ pct = 100; }
+  barFill.style.width = pct + '%';
+  pctEl.textContent = String(Math.floor(pct)).padStart(2,'0');
+  if(pct < 100){ setTimeout(tickLoader, 90); }
+  else{ finishLoader(); }
+}
+function finishLoader(){
+  setTimeout(()=>{
+    if(window.gsap){
+      gsap.to(preloader, {yPercent:-100, duration:0.9, ease:'power3.inOut', onComplete:()=>{ preloader.classList.add('done'); preloader.style.display='none'; document.body.classList.add('loaded'); ScrollTrigger.refresh(); }});
+    } else {
+      preloader.style.display='none';
+    }
+  }, 250);
+}
+setTimeout(tickLoader, 200);
+
+/* ============================================================
+   GSAP + SCROLLTRIGGER + LENIS SETUP
+============================================================ */
+if(window.gsap && window.ScrollTrigger){ gsap.registerPlugin(ScrollTrigger); }
+
+let lenis = null;
+if(window.Lenis && !prefersReduced){
+  lenis = new Lenis({ duration:1.15, easing:(t)=>1-Math.pow(1-t,3), smoothWheel:true });
+  function raf(time){ lenis.raf(time); requestAnimationFrame(raf); }
+  requestAnimationFrame(raf);
+  if(window.ScrollTrigger){
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time)=>{ lenis.raf(time*1000); });
+    gsap.ticker.lagSmoothing(0);
+  }
+}
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', function(e){
+    const id = this.getAttribute('href');
+    if(id.length>1 && document.querySelector(id)){
+      e.preventDefault();
+      const target = document.querySelector(id);
+      if(lenis){ lenis.scrollTo(target, {duration:1.2}); }
+      else{ target.scrollIntoView({behavior: prefersReduced ? 'auto':'smooth'}); }
+      closeMobileMenu();
+    }
+  });
+});
+
+/* ============================================================
+   NAV: scroll state + active section
+============================================================ */
+const nav = document.getElementById('nav');
+const navLinks = document.querySelectorAll('.nav-link');
+window.addEventListener('scroll', ()=>{
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+}, {passive:true});
+
+const sectionMap = [
+  {id:'macro', el:document.getElementById('macro')},
+  {id:'craft', el:document.getElementById('craft')},
+  {id:'movement', el:document.getElementById('movement')},
+  {id:'configurator', el:document.getElementById('configurator')}
+];
+if(window.ScrollTrigger){
+  sectionMap.forEach(s=>{
+    if(!s.el) return;
+    ScrollTrigger.create({
+      trigger:s.el, start:'top 50%', end:'bottom 50%',
+      onEnter:()=>setActive(s.id), onEnterBack:()=>setActive(s.id)
+    });
+  });
+}
+function setActive(id){
+  navLinks.forEach(l=> l.classList.toggle('active', l.dataset.section===id));
+}
+
+/* mobile menu */
+const menuToggle = document.getElementById('menu-toggle');
+const mobileMenu = document.getElementById('mobile-menu');
+const menuClose = document.getElementById('menu-close');
+function openMobileMenu(){ mobileMenu.classList.add('open'); mobileMenu.setAttribute('aria-hidden','false'); menuToggle.setAttribute('aria-expanded','true'); }
+function closeMobileMenu(){ mobileMenu.classList.remove('open'); mobileMenu.setAttribute('aria-hidden','true'); menuToggle.setAttribute('aria-expanded','false'); }
+menuToggle.addEventListener('click', ()=> mobileMenu.classList.contains('open') ? closeMobileMenu() : openMobileMenu());
+menuClose.addEventListener('click', closeMobileMenu);
+
+/* ============================================================
+   THEME TOGGLE
+============================================================ */
+const themeToggle = document.getElementById('theme-toggle');
+const themeLabel = document.getElementById('theme-label');
+themeToggle.addEventListener('click', ()=>{
+  const isLight = document.documentElement.getAttribute('data-theme')==='light';
+  document.documentElement.setAttribute('data-theme', isLight ? 'dark':'light');
+  themeLabel.textContent = isLight ? 'DARKROOM' : 'DAYLIGHT';
+  themeToggle.setAttribute('aria-pressed', String(!isLight));
+});
+
+/* ============================================================
+   SOUND TOGGLE (no autoplay, generated ambient tone via WebAudio)
+============================================================ */
+const soundToggle = document.getElementById('sound-toggle');
+const soundLabel = document.getElementById('sound-label');
+let audioCtx=null, ticker=null, soundOn=false;
+function startAmbience(){
+  if(!audioCtx){ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
+  const gain = audioCtx.createGain(); gain.gain.value = 0.03; gain.connect(audioCtx.destination);
+  function tick(){
+    if(!soundOn) return;
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type='square'; osc.frequency.value = 1000;
+    g.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.025, audioCtx.currentTime+0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+0.05);
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime+0.06);
+    ticker = setTimeout(tick, 1000);
+  }
+  tick();
+}
+soundToggle.addEventListener('click', ()=>{
+  soundOn = !soundOn;
+  soundToggle.setAttribute('aria-pressed', String(soundOn));
+  soundLabel.textContent = soundOn ? 'SOUND ON' : 'SOUND';
+  soundToggle.querySelector('.dot').classList.toggle('live', soundOn);
+  if(soundOn){
+    if(audioCtx && audioCtx.state==='suspended'){ audioCtx.resume(); }
+    startAmbience();
+  } else if(ticker){ clearTimeout(ticker); }
+});
+
+/* ============================================================
+   CUSTOM CURSOR
+============================================================ */
+if(!isTouch && !prefersReduced){
+  document.body.classList.add('has-cursor');
+  const cursor = document.getElementById('cursor');
+  const cursorLabel = document.getElementById('cursor-label');
+  let mx=0,my=0,cx=0,cy=0;
+  window.addEventListener('mousemove', e=>{ mx=e.clientX; my=e.clientY; cursorLabel.style.left=mx+'px'; cursorLabel.style.top=(my-34)+'px'; });
+  (function loop(){ cx += (mx-cx)*0.2; cy += (my-cy)*0.2; cursor.style.left=cx+'px'; cursor.style.top=cy+'px'; requestAnimationFrame(loop); })();
+  document.querySelectorAll('[data-cursor]').forEach(el=>{
+    el.addEventListener('mouseenter', ()=>{ cursorLabel.textContent = el.dataset.cursor; cursorLabel.style.opacity=1; cursor.style.width='34px'; cursor.style.height='34px'; });
+    el.addEventListener('mouseleave', ()=>{ cursorLabel.style.opacity=0; cursor.style.width='10px'; cursor.style.height='10px'; });
+  });
+  document.querySelectorAll('.btn, .config-chip, .dial-opt, .material-card').forEach(el=>{
+    el.addEventListener('mouseenter', ()=>{ cursor.style.width='30px'; cursor.style.height='30px'; });
+    el.addEventListener('mouseleave', ()=>{ cursor.style.width='10px'; cursor.style.height='10px'; });
+  });
+}
+
+/* ============================================================
+   HERO SPOTLIGHT — a controlled beam that follows the cursor
+============================================================ */
+if(!isTouch && !prefersReduced){
+  const spotlight = document.getElementById('spotlight');
+  const heroSection = document.getElementById('hero');
+  if(spotlight && heroSection){
+    heroSection.addEventListener('mousemove', (e)=>{
+      const r = heroSection.getBoundingClientRect();
+      const sx = ((e.clientX - r.left)/r.width*100).toFixed(1);
+      const sy = ((e.clientY - r.top)/r.height*100).toFixed(1);
+      spotlight.style.setProperty('--sx', sx+'%');
+      spotlight.style.setProperty('--sy', sy+'%');
+      spotlight.style.opacity = 1;
+    });
+    heroSection.addEventListener('mouseleave', ()=>{ spotlight.style.opacity = 0; });
+  }
+}
+
+/* ============================================================
+   MAGNETIC BUTTONS
+============================================================ */
+if(!isTouch && !prefersReduced){
+  document.querySelectorAll('.magnetic').forEach(btn=>{
+    btn.addEventListener('mousemove', (e)=>{
+      const r = btn.getBoundingClientRect();
+      const relX = e.clientX - r.left - r.width/2;
+      const relY = e.clientY - r.top - r.height/2;
+      gsap && gsap.to(btn, {x:relX*0.25, y:relY*0.4, duration:0.4, ease:'power3.out'});
+    });
+    btn.addEventListener('mouseleave', ()=>{ gsap && gsap.to(btn, {x:0,y:0,duration:0.5,ease:'elastic.out(1,0.4)'}); });
+  });
+}
+
+/* ============================================================
+   THREE.JS — PROCEDURAL AURELIS WATCH (HERO)
+============================================================ */
+let heroReduced = prefersReduced;
+(function initHeroScene(){
+  const canvas = document.getElementById('hero-canvas');
+  if(!window.THREE || !canvas) return;
+
+  let renderer;
+  try{
+    renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  }catch(err){
+    canvas.style.display='none';
+    return; // graceful fallback: hero typography still fully readable over atmosphere gradient
+  }
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(32, window.innerWidth/window.innerHeight, 0.1, 100);
+  camera.position.set(0,0,9);
+
+  function resize(){
+    const w = canvas.clientWidth || window.innerWidth;
+    const h = canvas.clientHeight || window.innerHeight;
+    renderer.setSize(w,h,false);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    camera.aspect = w/h; camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  if(renderer.outputEncoding !== undefined) renderer.outputEncoding = THREE.sRGBEncoding;
+  if(renderer.toneMapping !== undefined){ renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.1; }
+
+  /* lighting rig — soft overhead + rim + fill, controlled studio look */
+  const key = new THREE.DirectionalLight(0xfff2df, 2.0); key.position.set(2.5,4,3); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xC9A876, 1.6); rim.position.set(-3,1.5,-3); scene.add(rim);
+  const fill = new THREE.AmbientLight(0x1a1a1d, 1.1); scene.add(fill);
+  const under = new THREE.PointLight(0x2a2416, 0.6, 12); under.position.set(0,-3,2); scene.add(under);
+
+  /* materials */
+  const goldMat = new THREE.MeshStandardMaterial({color:0xC9A876, metalness:1, roughness:0.28});
+  const goldMatLight = new THREE.MeshStandardMaterial({color:0xE4D4AF, metalness:1, roughness:0.18});
+  const dialMat = new THREE.MeshStandardMaterial({color:0x0c0c0d, metalness:0.3, roughness:0.55});
+  const handMat = new THREE.MeshStandardMaterial({color:0xEDEAE3, metalness:0.8, roughness:0.2});
+  const crystalMat = new THREE.MeshPhysicalMaterial({color:0xffffff, metalness:0, roughness:0.02, transmission:0.95, transparent:true, opacity:0.35, thickness:0.4});
+
+  const watch = new THREE.Group();
+
+  const caseGeo = new THREE.CylinderGeometry(2.1,2.1,0.7,64);
+  const caseMesh = new THREE.Mesh(caseGeo, goldMat);
+  caseMesh.rotation.x = Math.PI/2;
+  watch.add(caseMesh);
+
+  const bezelGeo = new THREE.TorusGeometry(1.95,0.14,24,64);
+  const bezel = new THREE.Mesh(bezelGeo, goldMatLight);
+  watch.add(bezel);
+
+  const dialGeo = new THREE.CylinderGeometry(1.8,1.8,0.08,64);
+  const dial = new THREE.Mesh(dialGeo, dialMat);
+  dial.rotation.x = Math.PI/2; dial.position.z = 0.32;
+  watch.add(dial);
+
+  const crystalGeo = new THREE.SphereGeometry(1.85, 48, 24, 0, Math.PI*2, 0, Math.PI/2.6);
+  const crystal = new THREE.Mesh(crystalGeo, crystalMat);
+  crystal.rotation.x = Math.PI; crystal.position.z = 0.38;
+  watch.add(crystal);
+
+  // indices
+  for(let i=0;i<12;i++){
+    const a = (i/12)*Math.PI*2;
+    const idxGeo = new THREE.BoxGeometry(0.05,0.22,0.03);
+    const idx = new THREE.Mesh(idxGeo, goldMatLight);
+    idx.position.set(Math.sin(a)*1.55, Math.cos(a)*1.55, 0.37);
+    idx.rotation.z = -a;
+    watch.add(idx);
+  }
+  // tourbillon aperture
+  const tbGroup = new THREE.Group();
+  const tbRing = new THREE.Mesh(new THREE.TorusGeometry(0.42,0.02,12,32), goldMatLight);
+  tbGroup.add(tbRing);
+  const tbArm = new THREE.Mesh(new THREE.BoxGeometry(0.8,0.03,0.03), handMat);
+  tbGroup.add(tbArm);
+  tbGroup.position.set(0,-0.95,0.4);
+  watch.add(tbGroup);
+
+  // hands
+  const hourHand = new THREE.Mesh(new THREE.BoxGeometry(0.06,0.9,0.02), handMat);
+  hourHand.position.set(0,0.35,0.42); hourHand.rotation.z = -0.5;
+  watch.add(hourHand);
+  const minHand = new THREE.Mesh(new THREE.BoxGeometry(0.045,1.3,0.02), handMat);
+  minHand.position.set(0,0.55,0.44); minHand.rotation.z = 0.9;
+  watch.add(minHand);
+  const centerPin = new THREE.Mesh(new THREE.SphereGeometry(0.06,16,16), goldMatLight);
+  centerPin.position.z = 0.46; watch.add(centerPin);
+
+  // crown
+  const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.14,0.3,20), goldMat);
+  crown.rotation.z = Math.PI/2; crown.position.set(2.25,0,0);
+  watch.add(crown);
+
+  watch.rotation.x = 0.15;
+  scene.add(watch);
+
+  // soft floor reflection plane (fake, via gradient plane behind)
+  const floorGeo = new THREE.PlaneGeometry(20,20);
+  const floorMat = new THREE.MeshBasicMaterial({color:0x000000, transparent:true, opacity:0.5});
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.position.y = -3.2; floor.rotation.x = -Math.PI/2;
+  scene.add(floor);
+
+  /* mouse parallax (subtle, elegant, never aggressive) */
+  let targetRotY = 0, targetRotX = 0.15;
+  let mouseX = 0, mouseY = 0;
+  window.addEventListener('mousemove', (e)=>{
+    if(isTouch) return;
+    mouseX = (e.clientX/window.innerWidth - 0.5);
+    mouseY = (e.clientY/window.innerHeight - 0.5);
+  });
+
+  /* scroll-driven inspection: front -> 3/4 -> side -> caseback -> movement */
+  let scrollProgress = 0;
+  if(window.ScrollTrigger){
+    ScrollTrigger.create({
+      trigger:'#hero', start:'top top', end:'bottom top', scrub:1,
+      onUpdate: self => { scrollProgress = self.progress; }
+    });
+  }
+
+  function animate(){
+    requestAnimationFrame(animate);
+    if(!heroReduced){
+      targetRotY = scrollProgress * Math.PI*1.05 + mouseX*0.5;
+      targetRotX = 0.15 + scrollProgress*0.35 + mouseY*0.22;
+      watch.rotation.y += (targetRotY - watch.rotation.y) * 0.045;
+      watch.rotation.x += (targetRotX - watch.rotation.x) * 0.045;
+      tbGroup.rotation.z += 0.01;
+      camera.position.z = 9 - scrollProgress*3.2;
+      camera.position.y = scrollProgress * -0.4;
+    }
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+/* ============================================================
+   SCROLL TEXT REVEALS (manifesto, macro, finale)
+============================================================ */
+if(window.gsap && window.ScrollTrigger){
+
+  gsap.utils.toArray('.manifesto-line span').forEach((el,i)=>{
+    gsap.fromTo(el, {yPercent:110}, {
+      yPercent:0, ease:'power3.out', duration:1,
+      scrollTrigger:{ trigger:'.manifesto', start:'top 70%', end:'top 20%', scrub:0.6 }
+    });
+  });
+
+  /* macro hotspots stagger reveal */
+  gsap.timeline({ scrollTrigger:{ trigger:'.macro', start:'top top', end:'+=100%', scrub:1, pin:true }})
+    .to('#macro-watch', {rotate:8, duration:1}, 0)
+    .to('#hs1', {opacity:1, x:0, duration:0.6}, 0.05)
+    .to('#hs3', {opacity:1, x:0, duration:0.6}, 0.2)
+    .to('#hs2', {opacity:1, x:0, duration:0.6}, 0.4)
+    .to('#hs4', {opacity:1, x:0, duration:0.6}, 0.6)
+    .to('#hs5', {opacity:1, x:0, duration:0.6}, 0.8);
+
+  /* case specs count-up feel via scale-in */
+  gsap.utils.toArray('.spec-item').forEach((el,i)=>{
+    gsap.fromTo(el, {opacity:0, y:24}, {
+      opacity:1, y:0, duration:0.7, ease:'power2.out',
+      scrollTrigger:{ trigger:el, start:'top 88%' }
+    });
+  });
+
+  /* exploded movement scrub */
+  const exLayers = {
+    '#ex-case':      {x:0, y:0},
+    '#ex-bridge1':   {x:-140, y:-160},
+    '#ex-bridge2':   {x:140, y:150},
+    '#ex-barrel':    {x:-190, y:20},
+    '#ex-gears':     {x:170, y:-40},
+    '#ex-balance':   {x:0, y:-190},
+    '#ex-dial':      {x:0, y:200},
+    '#ex-hands':     {x:0, y:0}
+  };
+  const exTl = gsap.timeline({ scrollTrigger:{ trigger:'.exploded', start:'top top', end:'+=150%', scrub:1, pin:true }});
+  Object.keys(exLayers).forEach(sel=>{
+    const d = exLayers[sel];
+    exTl.fromTo(sel, {x:0,y:0,opacity: sel==='#ex-case'?1:0}, {x:d.x, y:d.y, opacity:1, duration:1, ease:'power1.inOut'}, 0);
+  });
+  Object.keys(exLayers).forEach(sel=>{
+    const d = exLayers[sel];
+    exTl.to(sel, {x:0, y:0, duration:1, ease:'power1.inOut'}, 1.1);
+  });
+
+  /* craftsmanship horizontal scroll */
+  const craftTrack = document.getElementById('craft-track');
+  function craftScrollWidth(){ return craftTrack.scrollWidth - window.innerWidth; }
+  gsap.to(craftTrack, {
+    x: () => -craftScrollWidth(),
+    ease:'none',
+    scrollTrigger:{ trigger:'.craft', start:'top top', end:()=>'+='+craftScrollWidth(), scrub:1, pin:true, invalidateOnRefresh:true }
+  });
+
+  /* collection horizontal scroll */
+  const collTrack = document.getElementById('coll-track');
+  function collScrollWidth(){ return collTrack.scrollWidth - window.innerWidth + 100; }
+  gsap.to(collTrack, {
+    x: () => -collScrollWidth(),
+    ease:'none',
+    scrollTrigger:{ trigger:'.collection', start:'top top', end:()=>'+='+collScrollWidth(), scrub:1, pin:true, invalidateOnRefresh:true }
+  });
+
+  /* passage of time */
+  gsap.to('#passage-hand', {
+    rotate:360, transformOrigin:'50% 50%', ease:'none',
+    scrollTrigger:{ trigger:'.passage', start:'top top', end:'+=100%', scrub:1, pin:true }
+  });
+  gsap.fromTo('#passage-l1', {opacity:0}, {opacity:1, scrollTrigger:{trigger:'.passage', start:'top top', end:'+=30%', scrub:1}});
+  gsap.fromTo('#passage-l2', {opacity:0}, {opacity:1, scrollTrigger:{trigger:'.passage', start:'+=40%', end:'+=90%', scrub:1}});
+
+  /* finale */
+  gsap.timeline({ scrollTrigger:{ trigger:'.finale', start:'top top', end:'+=100%', scrub:1, pin:true }})
+    .to('#finale-h', {opacity:1, duration:1})
+    .to('#finale-h', {opacity:0, duration:0.6}, 1.4)
+    .to('#finale-final', {opacity:1, duration:0.8}, 1.6);
+
+  /* passage ring ticks */
+  const ticksG = document.getElementById('passage-ticks');
+  for(let i=0;i<60;i++){
+    const a = (i/60)*Math.PI*2;
+    const long = i%5===0;
+    const r1 = 180, r2 = long?165:172;
+    const x1 = 200+Math.sin(a)*r1, y1 = 200-Math.cos(a)*r1;
+    const x2 = 200+Math.sin(a)*r2, y2 = 200-Math.cos(a)*r2;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1); line.setAttribute('y1',y1); line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+    ticksG.appendChild(line);
+  }
+}
+
+/* ============================================================
+   DIAL SELECTOR
+============================================================ */
+document.querySelectorAll('.dial-opt').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.dial-opt').forEach(b=>b.setAttribute('aria-pressed','false'));
+    btn.setAttribute('aria-pressed','true');
+    const gradId = btn.dataset.dial;
+    document.querySelectorAll('#dial-preview-svg .dial-face').forEach(f=> f.setAttribute('fill', 'url(#'+gradId+')'));
+    // sync configurator dial chip too
+    const match = document.querySelector('#opt-dial [data-grad="'+gradId+'"]');
+    if(match) match.click();
+  });
+});
+
+/* ============================================================
+   CONFIGURATOR LOGIC
+============================================================ */
+const cfgState = { case:'Rose Gold', dial:'Obsidian', strap:'Black Leather', buckle:'Polished' };
+const priceMap = { 'Rose Gold':0, 'Brushed Steel':-1400, 'Titanium':-900, 'Black Ceramic':600, 'Titanium Bracelet':1200 };
+
+function wireGroup(groupId, key, targetSel, attr){
+  document.querySelectorAll('#'+groupId+' .config-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      document.querySelectorAll('#'+groupId+' .config-chip').forEach(c=>c.setAttribute('aria-pressed','false'));
+      chip.setAttribute('aria-pressed','true');
+      cfgState[key] = chip.dataset.val;
+      const grad = chip.dataset.grad;
+      document.querySelectorAll(targetSel).forEach(t=> t.setAttribute(attr, 'url(#'+grad+')'));
+      updateSummary();
+    });
+  });
+}
+wireGroup('opt-case','case','#cfg-case, #cfg-crown','fill');
+wireGroup('opt-dial','dial','#cfg-dial','fill');
+wireGroup('opt-strap','strap','#cfg-strap-top, #cfg-strap-bottom','fill');
+wireGroup('opt-buckle','buckle','#cfg-buckle','fill');
+
+function updateSummary(){
+  document.getElementById('cfg-desc').textContent =
+    `42 MM · AUTOMATIC TOURBILLON · ${cfgState.case} · ${cfgState.dial} · ${cfgState.strap} · ${cfgState.buckle}`;
+  const priceEl = document.querySelector('.config-price');
+  let base = 18900;
+  base += (priceMap[cfgState.case]||0) + (priceMap[cfgState.strap]||0);
+  priceEl.innerHTML = `<span>STARTING AT</span>$${base.toLocaleString('en-US')}`;
+}
+
+/* ============================================================
+   RESIZE / REFRESH
+============================================================ */
+window.addEventListener('load', ()=>{ if(window.ScrollTrigger) ScrollTrigger.refresh(); });
+window.addEventListener('resize', ()=>{ if(window.ScrollTrigger) ScrollTrigger.refresh(); });
+
+})();
+</script>
+</body>
+</html>
