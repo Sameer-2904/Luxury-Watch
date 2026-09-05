@@ -287,8 +287,8 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 /* ============================================================
    CRAFTSMANSHIP (horizontal)
 ============================================================ */
-.craft{ background:var(--bg-1); padding:16vh 0 4vh; overflow:hidden; }
-.craft-head{ margin-bottom:6vh; }
+.craft{ background:var(--bg-1); padding:9vh 0 4vh; overflow:hidden; }
+.craft-head{ margin-bottom:3vh; }
 .craft-track{ display:flex; gap:2px; will-change:transform; }
 .craft-panel{ position:relative; flex:0 0 74vw; max-width:640px; height:66vh; overflow:hidden; }
 @media(min-width:900px){ .craft-panel{ flex:0 0 44vw; } }
@@ -358,8 +358,8 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 /* ============================================================
    COLLECTION (horizontal)
 ============================================================ */
-.collection{ background:var(--bg-1); padding:16vh 0 6vh; overflow:hidden; }
-.coll-track{ display:flex; gap:2vw; will-change:transform; padding-top:6vh; }
+.collection{ background:var(--bg-1); padding:9vh 0 6vh; overflow:hidden; }
+.coll-track{ display:flex; gap:2vw; will-change:transform; padding-top:3vh; }
 .coll-card{ flex:0 0 60vw; max-width:460px; }
 @media(min-width:900px){ .coll-card{ flex:0 0 30vw; } }
 .coll-visual{ height:56vh; background:var(--bg-3); position:relative; margin-bottom:22px; overflow:hidden; display:flex; align-items:center; justify-content:center;}
@@ -378,12 +378,7 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 .passage-ring{ position:relative; width:min(64vw,620px); aspect-ratio:1/1; }
 .passage-ring svg{ width:100%; height:100%; position:relative; z-index:1; }
 .passage-text{ position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:10px; }
-.passage-text::before{
-  content:''; position:absolute; top:50%; left:50%; width:70%; height:46%; transform:translate(-50%,-50%);
-  background:radial-gradient(ellipse, rgba(5,5,6,0.85) 0%, rgba(5,5,6,0.55) 55%, transparent 80%);
-  z-index:-1; pointer-events:none;
-}
-.passage-text h3{ font-size:clamp(1.8rem,4.4vw,3.2rem); text-transform:uppercase; opacity:0; }
+.passage-text h3{ font-size:clamp(1.8rem,4.4vw,3.2rem); text-transform:uppercase; opacity:0; text-shadow:0 2px 24px rgba(5,5,6,0.9), 0 0 40px rgba(5,5,6,0.9); }
 
 /* ============================================================
    SIGNATURE FINALE
@@ -1182,13 +1177,13 @@ let heroReduced = prefersReduced;
 
   /* lighting rig — soft overhead + rim + fill, controlled studio look */
   const key = new THREE.DirectionalLight(0xfff2df, 2.0); key.position.set(2.5,4,3); scene.add(key);
-  const rim = new THREE.DirectionalLight(0xC9A876, 1.6); rim.position.set(-3,1.5,-3); scene.add(rim);
+  const rim = new THREE.DirectionalLight(0xC9A876, 1.3); rim.position.set(-3,1.5,-3); scene.add(rim);
   const fill = new THREE.AmbientLight(0x1a1a1d, 1.1); scene.add(fill);
-  const under = new THREE.PointLight(0x2a2416, 0.6, 12); under.position.set(0,-3,2); scene.add(under);
+  const under = new THREE.PointLight(0x2a2416, 0.35, 12); under.position.set(0,-3,2); scene.add(under);
 
   /* materials */
   const goldMat = new THREE.MeshStandardMaterial({color:0xC9A876, metalness:1, roughness:0.28});
-  const goldMatLight = new THREE.MeshStandardMaterial({color:0xE4D4AF, metalness:1, roughness:0.18});
+  const goldMatLight = new THREE.MeshStandardMaterial({color:0xE4D4AF, metalness:1, roughness:0.26});
   const dialMat = new THREE.MeshStandardMaterial({color:0x0c0c0d, metalness:0.3, roughness:0.55});
   const handMat = new THREE.MeshStandardMaterial({color:0xEDEAE3, metalness:0.8, roughness:0.2});
   const crystalMat = new THREE.MeshPhysicalMaterial({color:0xffffff, metalness:0, roughness:0.06, transparent:true, opacity:0.16, clearcoat:1, clearcoatRoughness:0.15});
@@ -1209,9 +1204,9 @@ let heroReduced = prefersReduced;
   dial.rotation.x = Math.PI/2; dial.position.z = 0.32;
   watch.add(dial);
 
-  const crystalGeo = new THREE.SphereGeometry(1.85, 48, 24, 0, Math.PI*2, 0, Math.PI/2.6);
+  const crystalGeo = new THREE.CircleGeometry(1.85, 64);
   const crystal = new THREE.Mesh(crystalGeo, crystalMat);
-  crystal.rotation.x = Math.PI; crystal.position.z = 0.38;
+  crystal.position.z = 0.5;
   watch.add(crystal);
 
   // indices
@@ -1225,11 +1220,11 @@ let heroReduced = prefersReduced;
   }
   // tourbillon aperture
   const tbGroup = new THREE.Group();
-  const tbRing = new THREE.Mesh(new THREE.TorusGeometry(0.42,0.02,12,32), goldMatLight);
+  const tbRing = new THREE.Mesh(new THREE.TorusGeometry(0.34,0.018,12,32), goldMatLight);
   tbGroup.add(tbRing);
-  const tbArm = new THREE.Mesh(new THREE.BoxGeometry(0.8,0.03,0.03), handMat);
+  const tbArm = new THREE.Mesh(new THREE.BoxGeometry(0.64,0.025,0.025), handMat);
   tbGroup.add(tbArm);
-  tbGroup.position.set(0,-0.95,0.4);
+  tbGroup.position.set(0,-0.78,0.4);
   watch.add(tbGroup);
 
   // hands — geometry is translated so the pivot end sits at local origin (0,0,0),
@@ -1371,7 +1366,7 @@ if(window.gsap && window.ScrollTrigger){
 
   /* passage of time */
   gsap.to('#passage-hand', {
-    rotate:360, transformOrigin:'50% 50%', ease:'none',
+    rotate:360, transformOrigin:'200px 200px', ease:'none',
     scrollTrigger:{ trigger:'.passage', start:'top top', end:'+=100%', scrub:1, pin:true }
   });
   gsap.fromTo('#passage-l1', {opacity:0}, {opacity:1, scrollTrigger:{trigger:'.passage', start:'top top', end:'+=30%', scrub:1}});
