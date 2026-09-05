@@ -231,8 +231,8 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 /* ============================================================
    MACRO INSPECTION
 ============================================================ */
-.macro{ min-height:180vh; background:var(--bg-1); position:relative; }
-.macro-sticky{ position:sticky; top:0; height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.macro{ min-height:100vh; background:var(--bg-1); position:relative; }
+.macro-sticky{ position:relative; top:0; height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden; }
 .macro-title{ position:absolute; top:100px; left:6vw; max-width:340px; }
 .macro-stage{ width:min(58vw,620px); aspect-ratio:1/1; position:relative; }
 .hotspot{
@@ -260,13 +260,13 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 .movement{ background:var(--bg-2); padding:18vh 0 10vh; }
 .movement-head{ display:grid; grid-template-columns:1.1fr 1fr; gap:6vw; align-items:end; margin-bottom:8vh;}
 .movement-head p{ max-width:420px; }
-.exploded{ min-height:220vh; background:var(--bg-2); position:relative; }
-.exploded-sticky{ position:sticky; top:0; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden;}
-.exploded-title{ position:absolute; top:90px; text-align:center; width:100%; padding:0 6vw; }
-.exploded-stage{ position:relative; width:min(70vw,520px); height:min(70vw,520px); }
+.exploded{ min-height:100vh; background:var(--bg-2); position:relative; }
+.exploded-sticky{ position:relative; top:0; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden;}
+.exploded-title{ position:absolute; top:70px; text-align:center; width:100%; padding:14px 6vw; z-index:3; background:linear-gradient(180deg, rgba(27,28,31,0.9) 0%, rgba(27,28,31,0) 100%); }
+.exploded-stage{ position:relative; width:min(58vw,420px); height:min(58vw,420px); z-index:1; }
 .ex-layer{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; will-change:transform; }
 .ex-layer svg{ width:100%; height:100%; overflow:visible; }
-.exploded-caption{ position:absolute; bottom:80px; text-align:center; width:100%; font-size:12px; letter-spacing:0.12em; color:var(--text-dim); padding:0 6vw;}
+.exploded-caption{ position:absolute; bottom:70px; text-align:center; width:100%; font-size:12px; letter-spacing:0.12em; color:var(--text-dim); padding:14px 6vw; z-index:3; background:linear-gradient(0deg, rgba(27,28,31,0.9) 0%, rgba(27,28,31,0) 100%);}
 
 /* ============================================================
    TOURBILLON
@@ -373,18 +373,23 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 /* ============================================================
    PASSAGE OF TIME
 ============================================================ */
-.passage{ min-height:160vh; background:#050506; position:relative; }
-.passage-sticky{ position:sticky; top:0; height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden;}
+.passage{ min-height:100vh; background:#050506; position:relative; }
+.passage-sticky{ position:relative; top:0; height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden;}
 .passage-ring{ position:relative; width:min(64vw,620px); aspect-ratio:1/1; }
-.passage-ring svg{ width:100%; height:100%; }
-.passage-text{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:10px; }
+.passage-ring svg{ width:100%; height:100%; position:relative; z-index:1; }
+.passage-text{ position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:10px; }
+.passage-text::before{
+  content:''; position:absolute; top:50%; left:50%; width:70%; height:46%; transform:translate(-50%,-50%);
+  background:radial-gradient(ellipse, rgba(5,5,6,0.85) 0%, rgba(5,5,6,0.55) 55%, transparent 80%);
+  z-index:-1; pointer-events:none;
+}
 .passage-text h3{ font-size:clamp(1.8rem,4.4vw,3.2rem); text-transform:uppercase; opacity:0; }
 
 /* ============================================================
    SIGNATURE FINALE
 ============================================================ */
-.finale{ min-height:150vh; background:#000; position:relative; }
-.finale-sticky{ position:sticky; top:0; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:26px; overflow:hidden;}
+.finale{ min-height:100vh; background:#000; position:relative; }
+.finale-sticky{ position:relative; top:0; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:26px; overflow:hidden;}
 .finale-sticky::before{
   content:''; position:absolute; top:50%; left:50%; width:50vw; height:50vw; max-width:600px; max-height:600px;
   transform:translate(-50%,-50%); background:radial-gradient(circle, rgba(201,168,118,0.08), transparent 68%); pointer-events:none;
@@ -1011,18 +1016,28 @@ const sectionMap = [
   {id:'movement', el:document.getElementById('movement')},
   {id:'configurator', el:document.getElementById('configurator')}
 ];
-if(window.ScrollTrigger){
-  sectionMap.forEach(s=>{
-    if(!s.el) return;
-    ScrollTrigger.create({
-      trigger:s.el, start:'top 50%', end:'bottom 50%',
-      onEnter:()=>setActive(s.id), onEnterBack:()=>setActive(s.id)
-    });
-  });
-}
 function setActive(id){
   navLinks.forEach(l=> l.classList.toggle('active', l.dataset.section===id));
 }
+/* Live geometry check rather than cached ScrollTrigger start/end pixels — the pinned
+   horizontal-scroll sections (craft, collection) change the document's real layout height
+   after those triggers are created, which can desync cached trigger positions. Reading
+   getBoundingClientRect on every tick is cheap and always reflects the true current layout. */
+let lastActiveId = null;
+function updateActiveSection(){
+  const viewportLine = window.innerHeight * 0.5;
+  let current = null;
+  for(let i=0;i<sectionMap.length;i++){
+    const s = sectionMap[i];
+    if(!s.el) continue;
+    const r = s.el.getBoundingClientRect();
+    if(r.top <= viewportLine && r.bottom >= viewportLine){ current = s.id; break; }
+  }
+  if(current && current !== lastActiveId){ lastActiveId = current; setActive(current); }
+}
+if(window.gsap){ gsap.ticker.add(updateActiveSection); }
+else{ window.addEventListener('scroll', updateActiveSection, {passive:true}); }
+updateActiveSection();
 
 /* mobile menu */
 const menuToggle = document.getElementById('menu-toggle');
@@ -1149,8 +1164,8 @@ let heroReduced = prefersReduced;
     return; // graceful fallback: hero typography still fully readable over atmosphere gradient
   }
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(32, window.innerWidth/window.innerHeight, 0.1, 100);
-  camera.position.set(0,0,9);
+  const camera = new THREE.PerspectiveCamera(30, window.innerWidth/window.innerHeight, 0.1, 100);
+  camera.position.set(0,0,10.5);
 
   function resize(){
     const w = canvas.clientWidth || window.innerWidth;
@@ -1176,7 +1191,7 @@ let heroReduced = prefersReduced;
   const goldMatLight = new THREE.MeshStandardMaterial({color:0xE4D4AF, metalness:1, roughness:0.18});
   const dialMat = new THREE.MeshStandardMaterial({color:0x0c0c0d, metalness:0.3, roughness:0.55});
   const handMat = new THREE.MeshStandardMaterial({color:0xEDEAE3, metalness:0.8, roughness:0.2});
-  const crystalMat = new THREE.MeshPhysicalMaterial({color:0xffffff, metalness:0, roughness:0.02, transmission:0.95, transparent:true, opacity:0.35, thickness:0.4});
+  const crystalMat = new THREE.MeshPhysicalMaterial({color:0xffffff, metalness:0, roughness:0.06, transparent:true, opacity:0.16, clearcoat:1, clearcoatRoughness:0.15});
 
   const watch = new THREE.Group();
 
@@ -1217,13 +1232,23 @@ let heroReduced = prefersReduced;
   tbGroup.position.set(0,-0.95,0.4);
   watch.add(tbGroup);
 
-  // hands
-  const hourHand = new THREE.Mesh(new THREE.BoxGeometry(0.06,0.9,0.02), handMat);
-  hourHand.position.set(0,0.35,0.42); hourHand.rotation.z = -0.5;
+  // hands — geometry is translated so the pivot end sits at local origin (0,0,0),
+  // then the mesh is positioned at the watch center and rotated there, so hands
+  // always radiate correctly from the center pin instead of swinging around their own midpoint.
+  const hourGeo = new THREE.BoxGeometry(0.07,0.85,0.025);
+  hourGeo.translate(0, 0.85/2 - 0.06, 0);
+  const hourHand = new THREE.Mesh(hourGeo, handMat);
+  hourHand.position.set(0,0,0.42);
+  hourHand.rotation.z = -0.5;
   watch.add(hourHand);
-  const minHand = new THREE.Mesh(new THREE.BoxGeometry(0.045,1.3,0.02), handMat);
-  minHand.position.set(0,0.55,0.44); minHand.rotation.z = 0.9;
+
+  const minGeo = new THREE.BoxGeometry(0.05,1.25,0.025);
+  minGeo.translate(0, 1.25/2 - 0.06, 0);
+  const minHand = new THREE.Mesh(minGeo, handMat);
+  minHand.position.set(0,0,0.44);
+  minHand.rotation.z = 0.9;
   watch.add(minHand);
+
   const centerPin = new THREE.Mesh(new THREE.SphereGeometry(0.06,16,16), goldMatLight);
   centerPin.position.z = 0.46; watch.add(centerPin);
 
@@ -1268,8 +1293,8 @@ let heroReduced = prefersReduced;
       watch.rotation.y += (targetRotY - watch.rotation.y) * 0.045;
       watch.rotation.x += (targetRotX - watch.rotation.x) * 0.045;
       tbGroup.rotation.z += 0.01;
-      camera.position.z = 9 - scrollProgress*3.2;
-      camera.position.y = scrollProgress * -0.4;
+      camera.position.z = 10.5 - scrollProgress*2.2;
+      camera.position.y = scrollProgress * -0.3;
     }
     renderer.render(scene, camera);
   }
@@ -1308,12 +1333,12 @@ if(window.gsap && window.ScrollTrigger){
   /* exploded movement scrub */
   const exLayers = {
     '#ex-case':      {x:0, y:0},
-    '#ex-bridge1':   {x:-140, y:-160},
-    '#ex-bridge2':   {x:140, y:150},
-    '#ex-barrel':    {x:-190, y:20},
-    '#ex-gears':     {x:170, y:-40},
-    '#ex-balance':   {x:0, y:-190},
-    '#ex-dial':      {x:0, y:200},
+    '#ex-bridge1':   {x:-85, y:-95},
+    '#ex-bridge2':   {x:85, y:90},
+    '#ex-barrel':    {x:-115, y:10},
+    '#ex-gears':     {x:105, y:-20},
+    '#ex-balance':   {x:0, y:-115},
+    '#ex-dial':      {x:0, y:115},
     '#ex-hands':     {x:0, y:0}
   };
   const exTl = gsap.timeline({ scrollTrigger:{ trigger:'.exploded', start:'top top', end:'+=150%', scrub:1, pin:true }});
@@ -1424,6 +1449,10 @@ function updateSummary(){
 ============================================================ */
 window.addEventListener('load', ()=>{ if(window.ScrollTrigger) ScrollTrigger.refresh(); });
 window.addEventListener('resize', ()=>{ if(window.ScrollTrigger) ScrollTrigger.refresh(); });
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(()=>{ if(window.ScrollTrigger) ScrollTrigger.refresh(); });
+}
+setTimeout(()=>{ if(window.ScrollTrigger) ScrollTrigger.refresh(); }, 1200);
 
 })();
 </script>
